@@ -1,7 +1,3 @@
-#
-# Web based GUI for BBC chess engine
-#
-
 # packages
 from flask import Flask
 from flask import render_template
@@ -74,7 +70,7 @@ def probe_book(pgn):
 # root(index) route
 @app.route('/')
 def root():
-    return render_template('bbc.html')
+    return render_template('cc.html')
 
 # make move API
 @app.route('/make_move', methods=['POST'])

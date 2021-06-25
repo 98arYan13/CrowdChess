@@ -1,7 +1,8 @@
 <html>
   <head>
-    <title>BBC chess engine</title>
+    <title>Crowd Chess (WoC)</title>
     
+    <!-- TODO: change favicon -->
     <!-- favicon -->
     <link rel="shortcut icon" href="/static/favicon.ico">
     
@@ -20,13 +21,14 @@
     <link rel="stylesheet" href="/static/css/chessboard-1.0.0.min.css">
     <script src="/static/js/chessboard-1.0.0.min.js"></script>
     
+    <!-- TODO: change this -->
     <!-- Analytics -->
-    <script type="text/javascript">
+    <!--<script type="text/javascript">
       $.post('https://maksimkorzh.pythonanywhere.com/analytics/api/post', {
         date: new Date,
         url: window.location.href
       });
-    </script>
+    </script>-->
     
   </head>
   <body>
@@ -99,14 +101,12 @@
                 <div class="col ml-4">
                   <!-- engine info -->
                   <div class="row mx-auto">    
-                    <div class="col"><img src="/static/LOGO.png"></img></div>
                     <div class="col-8">  
                       <p class="lead font-weight-normal mt-3">
-                      <strong>BBC 1.4 + Stockfish NNUE (FINAL RELEASE)</strong>
+                      Engine: <strong>Stockfish 13</strong>
                       <br>
-                      UCI chess engine by Code Monkey King
+                      <a href="https://github.com/maksimKorzh/uci-gui"><small>uci-gui by Code Monkey King</small></a>
                       </p>
-                      <small>Logo by Brendan J. Norman</small>
                     </div>
                   </div>
                   
@@ -115,8 +115,8 @@
                   <!-- info -->
                   <div class="row mx-auto mt-2">
                     <small class="mx-auto">
-                      NOTE: Online version has strength limitations due to poor performace of free hosting.<br>
-                      Please make sure to <a href="https://github.com/maksimKorzh/bbc/releases/tag/1.4">download UCI version of BBC chess engine</a> to get the most of it!
+                      <!-- TODO: add note -->
+                      NOTE: !
                     </small>
                   </div>
                   
@@ -156,12 +156,13 @@
                 </div>
               </div>
             </div>
+            <!-- TODO: add footer -->
             <div class="card-footer">
               <!-- links -->
               <div class="input-group mt-2 mb-3">
-                <a href="https://github.com/maksimKorzh/bbc" class="btn btn-primary mx-auto ml-2">BBC source code!</a>
-                <a href="mailto:freesoft.for.people@gmail.com" class="text-dark nav-link mx-auto"><strong class="ml-2 mt-1">freesoft.for.people@gmail.com</strong></a>
-                <a href="https://www.patreon.com/bePatron?u=29097253" class="btn btn-warning mx-auto">Become a Patron!</a>
+                <a href="https://github.com/98arYan13" class="btn btn-primary mx-auto ml-2">CrowdChess (WoC) source code!</a>
+                <a href="mailto:ikoiran@gmail.com" class="text-dark nav-link mx-auto"><strong class="ml-2 mt-1">ikoiran@gmail.com</strong></a>
+                <!--<a class="btn btn-warning mx-auto">حمایت مالی</a>-->
               </div>
             </div>
           </div>
@@ -283,19 +284,19 @@
     if (user_color == 'White')
     {
       // init PGN header
-      pgn_header = '[White "' + user_name + '"]\n[Black "BBC 1.2"]\n\n';
+      pgn_header = '[White "' + user_name + '"]\n[Black "Stockfish"]\n\n';
       
       // init PGN filename
-      $('#download_link').attr('download', user_name + '_vs_BBC_' + date.toString().replace(/\s/g, "_") + '.pgn');
+      $('#download_link').attr('download', user_name + '_vs_Stockfish_' + date.toString().replace(/\s/g, "_") + '.pgn');
     }
     // if user color is black
     else if (user_color == 'Black')
     {
       // init PGN header
-      pgn_header = '[White "BBC 1.2"]\n[Black "' + user_name + '"]\n\n';
+      pgn_header = '[White "Stockfish 1.2"]\n[Black "' + user_name + '"]\n\n';
       
       // init PGN filename
-      $('#download_link').attr('download', 'BBC_vs_' + user_name + '_' + date.toString().replace(/\s/g, "_") + '.pgn');
+      $('#download_link').attr('download', 'Stockfish_vs_' + user_name + '_' + date.toString().replace(/\s/g, "_") + '.pgn');
     }
     // otherwise it's error
     else
