@@ -99,13 +99,15 @@
                   </div>
                 </div>
                 <div class="col ml-4">
-                  <!-- engine info -->
                   <div class="row mx-auto">    
-                    <div class="col-8">  
-                      <p class="lead font-weight-normal mt-3">
-                      Engine: <strong>Stockfish 13</strong>
-                      <br>
-                      <a href="https://github.com/maksimKorzh/uci-gui"><small>uci-gui by Code Monkey King</small></a>
+                    <div class="col">
+
+                      <!-- CrowdChess info -->
+                      <p class="h3 mt-2"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
+
+                      <!-- engine info -->
+                      <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
+                      <a href="https://github.com/maksimKorzh/uci-gui"><small class="ml-2">uci-gui by Code Monkey King</small></a>
                       </p>
                     </div>
                   </div>
@@ -161,18 +163,18 @@
               
               <!-- site statistics -->
               <div class="col-xs-6 col-ms-6 col-sm-3 no-space">
-                <h5><span class="float-right">آمار سایت</span></h5>
+                <h6><span class="float-right">آمار سایت</span></h6>
                 <ul>
 
                   <!-- online users counter -->
                   <li><script type="text/javascript" src="https://www.usersonline.org/uo-04Y5ZCY4bCA5Z1Z2-1-0.js"></script></li>
                 </ul>
               </div>
+              <hr style="width:100%;text-align:left;margin-left:0">
 
               <!-- links -->
               <div class="input-group mt-2 mb-3">
-                <a href="https://github.com/98arYan13" class="mx-auto ml-2">CrowdChess (WoC) source code!</a>
-                <br>
+                <a href="https://github.com/98arYan13" class="mx-auto ml-2">CrowdChess (WoC) source code</a>
                 <a href="mailto:ikoiran@gmail.com" class="text-dark nav-link mx-auto">
                   <strong class="ml-2 mt-1">ikoiran@gmail.com</strong>
                 </a>
@@ -418,7 +420,8 @@
     position: 'start',
     onDragStart: onDragStart,
     onDrop: onDrop,
-    onSnapEnd: onSnapEnd
+    onSnapEnd: onSnapEnd,
+    sparePieces: false
   }
   
   // create chess board widget instance
