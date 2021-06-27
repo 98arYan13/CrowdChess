@@ -202,7 +202,7 @@
   function make_move() {
     // disable take back button
     $('#take_back').attr('disabled', true);
-    
+
     // make HTTP POST request to make move API
     $.post('/make_move',{
         'pgn': game.pgn(),
@@ -395,14 +395,17 @@
     // illegal move
     if (move === null) return 'snapback'
 
+    // (test)
+    onMoveEnd();
+
     // make computer move
     make_move();
-    
+
     // update game status
     updateStatus();
   }
   
-  // (test)
+  // highlight piece new position square (test)
   function onMoveEnd () {
   $board.find('.square-' + squareToHighlight)
     .addClass('highlight-' + colorToHighlight)
