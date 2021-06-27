@@ -40,6 +40,14 @@
               <div class="row">
                 <div class="col-5">
                   <!-- chess board view -->
+                  <style type="text/css">
+                  .highlight-white {
+                    box-shadow: inset 0 0 3px 3px yellow;
+                  }
+                  .highlight-black {
+                    box-shadow: inset 0 0 3px 3px blue;
+                  }
+                  </style>
                   <div id="chess_board" class="mx-auto mb-2" style="width: 400px;"></div>
               
                   <!-- game controls -->
@@ -98,12 +106,12 @@
                     
                   </div>
                 </div>
-                <div class="col ml-4">
+                <div class="col mx-auto">
                   <div class="row mx-auto">    
                     <div class="col">
 
                       <!-- CrowdChess info -->
-                      <p class="h3 mt-2"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
+                      <p class="h3 mx-auto"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
 
                       <!-- engine info -->
                       <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
@@ -161,16 +169,17 @@
             <!-- TODO: add footer -->
             <div class="card-footer">
               
+              <!-- TODO: correct this at end -->
               <!-- site statistics -->
-              <div class="col-xs-6 col-ms-6 col-sm-3 no-space">
+              <!--<div class="col-xs-6 col-ms-6 col-sm-3 no-space">
                 <h6><span class="float-right">آمار سایت</span></h6>
-                <ul>
-
+                <ul> -->
+                  
                   <!-- online users counter -->
-                  <li><script type="text/javascript" src="https://www.usersonline.org/uo-04Y5ZCY4bCA5Z1Z2-1-0.js"></script></li>
+                  <!--<li><script type="text/javascript" src="https://www.usersonline.org/uo-04Y5ZCY4bCA5Z1Z2-1-0.js"></script></li>
                 </ul>
               </div>
-              <hr style="width:100%;text-align:left;margin-left:0">
+              <hr style="width:100%;text-align:left;margin-left:0">  -->
 
               <!-- links -->
               <div class="input-group mt-2 mb-3">
@@ -202,7 +211,7 @@
       }, function(data) {
         // load fen into the current board state
         game.move(data.best_move, { sloppy: true })
-        
+
         // update board position
         board.position(game.fen());
 
@@ -340,7 +349,14 @@
   var $depth = $('#depth');
   var $time = $('#time');
   var $nodes = $('#nodes');
-  var $knps = $('#knps')
+  var $knps = $('#knps');
+
+  //(test)
+  var $board = $('#chess_board')
+  var squareToHighlight = null
+  var squareClass = 'square-55d63'
+  var colorToHighlight = null
+
 
   // on picking up a piece
   function onDragStart (source, piece, position, orientation) {
@@ -363,6 +379,19 @@
       promotion: 'q' // NOTE: always promote to a queen for example simplicity
     })
 
+    // (test)
+    if (move.color === 'w') {
+    $board.find('.' + squareClass).removeClass('highlight-white')
+    $board.find('.square-' + move.from).addClass('highlight-white')
+    squareToHighlight = move.to
+    colorToHighlight = 'white'
+    } else {
+    $board.find('.' + squareClass).removeClass('highlight-black')
+    $board.find('.square-' + move.from).addClass('highlight-black')
+    squareToHighlight = move.to
+    colorToHighlight = 'black'
+    }
+
     // illegal move
     if (move === null) return 'snapback'
 
@@ -371,6 +400,12 @@
     
     // update game status
     updateStatus();
+  }
+  
+  // (test)
+  function onMoveEnd () {
+  $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-' + colorToHighlight)
   }
 
   // update the board position after the piece snap
@@ -420,6 +455,7 @@
     position: 'start',
     onDragStart: onDragStart,
     onDrop: onDrop,
+    onMoveEnd: onMoveEnd, // (test)
     onSnapEnd: onSnapEnd,
     sparePieces: false
   }
