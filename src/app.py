@@ -86,7 +86,7 @@ def make_move():
         }
 
     # read game moves from PGN
-    game = chess.pgn.read_game(io.StringIO(pgn))    
+    game = chess.pgn.read_game(io.StringIO(pgn))    # Using the StringIO method to set as file object. Now we have an object file that we will able to treat just like a file.
     
     # init board
     board = game.board()
