@@ -354,13 +354,6 @@
   var whiteSquareGrey = '#a9a9a9'
   var blackSquareGrey = '#696969'
 
-  //(test)
-  var $board = $('#chess_board')
-  var squareToHighlight = null
-  var squareClass = 'square-55d63'
-  var colorToHighlight = null
-
-
   // remove grey squares
   function removeGreySquares () {
     $('#chess_board .square-55d63').css('background', '')
@@ -401,24 +394,8 @@
       promotion: 'q' // NOTE: always promote to a queen for example simplicity
     })
 
-    // (test)
-    if (move.color === 'w') {
-    $board.find('.' + squareClass).removeClass('highlight-white')
-    $board.find('.square-' + move.from).addClass('highlight-white')
-    squareToHighlight = move.to
-    colorToHighlight = 'white'
-    } else {
-    $board.find('.' + squareClass).removeClass('highlight-black')
-    $board.find('.square-' + move.from).addClass('highlight-black')
-    squareToHighlight = move.to
-    colorToHighlight = 'black'
-    }
-
     // illegal move
     if (move === null) return 'snapback'
-
-    // (test)
-    onMoveEnd();
 
     // make computer move
     make_move();
@@ -455,12 +432,6 @@
     board.position(game.fen())
   }
   
-  // highlight piece new position square (test)
-  function onMoveEnd () {
-  $board.find('.square-' + squareToHighlight)
-    .addClass('highlight-' + colorToHighlight)
-  }
-
   // update the board position after the piece snap
   // for castling, en passant, pawn promotion
   function onSnapEnd () {
@@ -508,9 +479,8 @@
     position: 'start',
     onDragStart: onDragStart,
     onDrop: onDrop,
-    onMoveEnd: onMoveEnd, // (test)
     onSnapEnd: onSnapEnd,
-    sparePieces: false, // (test)
+    sparePieces: false, // add spare pieces, but not useful I think.
     onMouseoutSquare: onMouseoutSquare,
     onMouseoverSquare: onMouseoverSquare
   }
