@@ -161,13 +161,15 @@ def make_move():
             'depth': info['depth'],
             'pv': ' '.join([str(move) for move in info['pv']]),
             'nodes': info['nodes'],
-            'time': info['time']
+            'time': info['time'],
+            'max_legal_moves': board.legal_moves.count() # (test)
         }
     
     except:
         return {
             'fen': board.fen(),
-            'score': '#+1'
+            'score': '#+1',
+            'max_legal_moves': board.legal_moves.count() # (test)
         }
 
 @app.route('/analytics')

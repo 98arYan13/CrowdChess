@@ -147,6 +147,7 @@
                         <th>Time</th>
                         <th>Nodes</th>
                         <th>Knps</th>
+                        <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
                       </tr>
                     </thead>
                     <tbody>
@@ -156,6 +157,7 @@
                         <td id="time"></td>
                         <td id="nodes"></td>
                         <td id="knps"></td>
+                        <td id="max_legal_moves"></td>
                       <tr>
                     </tbody>
                   </table>
@@ -228,6 +230,7 @@
         $depth.text(data.depth);
         $time.text(data.time);
         $nodes.text(data.nodes);
+        $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
         $knps.text(Math.round(Number($nodes.text()) / parseFloat($time.text())) / 1000)
 
         // update game status
@@ -361,6 +364,7 @@
   var $knps = $('#knps');
   var whiteSquareGrey = '#a9a9a9'
   var blackSquareGrey = '#696969'
+  var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
 
   // remove grey squares
   function removeGreySquares () {
@@ -488,7 +492,7 @@
     onDragStart: onDragStart,
     onDrop: onDrop,
     onSnapEnd: onSnapEnd,
-    sparePieces: false, // add spare pieces, but not useful I think.
+    sparePieces: false, // If true: add spare pieces, but not useful I think.
     onMouseoutSquare: onMouseoutSquare,
     onMouseoverSquare: onMouseoverSquare
   }
