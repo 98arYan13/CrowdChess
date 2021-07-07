@@ -142,22 +142,22 @@
                   <table class="table text-center mt-4">
                     <thead>
                       <tr>
+                        <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
                         <th>Score</th>
                         <th>Depth</th>
                         <th>Time</th>
                         <th>Nodes</th>
                         <th>Knps</th>
-                        <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
+                        <td id="max_legal_moves"></td>
                         <td><strong id="score" class="text-danger"></strong></td>
                         <td id="depth"></td>
                         <td id="time"></td>
                         <td id="nodes"></td>
                         <td id="knps"></td>
-                        <td id="max_legal_moves"></td>
                       <tr>
                     </tbody>
                   </table>
@@ -208,6 +208,15 @@
 </html>
 
 <script>
+  // max legal moves (test)
+  function max_legal_moves() {
+    $.post('/max_legal_moves',{
+        'pgn': game.pgn()
+      }, function(data) {
+        $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
+      });
+  }
+
   // make computer move
   function make_move() {
     // disable take back button
@@ -230,12 +239,13 @@
         $depth.text(data.depth);
         $time.text(data.time);
         $nodes.text(data.nodes);
-        $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
         $knps.text(Math.round(Number($nodes.text()) / parseFloat($time.text())) / 1000)
 
         // update game status
         updateStatus();
         
+        max_legal_moves(); // (test)
+
         // re-enable take back button
         $('#take_back').attr('disabled', false);
     });
@@ -291,7 +301,6 @@
   
   // handle set FEN button click
   $('#set_fen').on('click', function() {
-    // set user FEN
     
     // FEN parsed
     if (game.load($('#fen').val()))
@@ -440,10 +449,6 @@
     removeGreySquares()
   }
 
-  function onSnapEnd () {
-    board.position(game.fen())
-  }
-  
   // update the board position after the piece snap
   // for castling, en passant, pawn promotion
   function onSnapEnd () {
