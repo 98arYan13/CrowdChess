@@ -25,7 +25,7 @@ def probe_book(pgn):
 
         # init board        
         board = chess.Board()
-        
+
         # define response moves
         response_moves = []
 
@@ -72,10 +72,20 @@ def probe_book(pgn):
 def root():
     return render_template('cc.html')
 
+# (test)
+@app.route('/max_legal_moves', methods=['POST'])
+def max_legal_moves():
+    pgn = request.form.get('pgn')
+    game = chess.pgn.read_game(io.StringIO(pgn))
+    board = game.board()
+    for move in game.mainline_moves():
+        board.push(move)
+    return {'max_legal_moves': board.legal_moves.count()}
+
 # make move API
 @app.route('/make_move', methods=['POST'])
 def make_move():
-    # extract FEN string from HTTP POST request body
+    # extract PGN string from HTTP POST request body
     pgn = request.form.get('pgn')
     
     # probe opening book
@@ -87,10 +97,10 @@ def make_move():
 
     # read game moves from PGN
     game = chess.pgn.read_game(io.StringIO(pgn))    # Using the StringIO method to set as file object. Now we have an object file that we will able to treat just like a file.
-    
+
     # init board
     board = game.board()
-    
+
     # loop over moves in game
     for move in game.mainline_moves():
         # make move on chess board
@@ -138,8 +148,6 @@ def make_move():
         # update internal python chess board state
         board.push(best_move)
         
-       
-        
         # get best score
         try:
             score = -int(str(info['score'])) / 100
@@ -162,16 +170,18 @@ def make_move():
             'pv': ' '.join([str(move) for move in info['pv']]),
             'nodes': info['nodes'],
             'time': info['time'],
-            'max_legal_moves': board.legal_moves.count() # (test)
+            #'max_legal_moves': max_legal_moves(board) # (test)
         }
     
     except:
         return {
             'fen': board.fen(),
             'score': '#+1',
-            'max_legal_moves': board.legal_moves.count() # (test)
+            #'max_legal_moves': max_legal_moves(board) # (test)
         }
 
+
+"""
 @app.route('/analytics')
 def analytics():
     return render_template('stats.html')
@@ -216,6 +226,7 @@ def get():
             except: pass
               
     return jsonify({'data': stats})
+"""
 
 # main driver
 if __name__ == '__main__':
