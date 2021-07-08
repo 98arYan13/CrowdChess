@@ -208,7 +208,7 @@
 </html>
 
 <script>
-  // max legal moves (test)
+  // max legal moves
   function max_legal_moves() {
     $.post('/max_legal_moves',{
         'pgn': game.pgn()
@@ -244,7 +244,7 @@
         // update game status
         updateStatus();
         
-        max_legal_moves(); // (test)
+        max_legal_moves();
 
         // re-enable take back button
         $('#take_back').attr('disabled', false);
@@ -259,6 +259,8 @@
     
     // set initial board position
     board.position('start');
+
+    max_legal_moves();
   });
   
   // handle make move button click
@@ -275,6 +277,8 @@
     
     // update board position
     board.position(game.fen());
+
+    max_legal_moves();
     
     // update game status
     updateStatus();
@@ -303,9 +307,12 @@
   $('#set_fen').on('click', function() {
     
     // FEN parsed
-    if (game.load($('#fen').val()))
+    if (game.load($('#fen').val())) {
       // set board position
       board.position(game.fen());
+
+      max_legal_moves();
+    }
     
     // FEN is not parsed
     else

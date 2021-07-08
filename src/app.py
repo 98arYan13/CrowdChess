@@ -72,15 +72,18 @@ def probe_book(pgn):
 def root():
     return render_template('cc.html')
 
-# (test)
+# Maximum legal moves for current playable color
 @app.route('/max_legal_moves', methods=['POST'])
 def max_legal_moves():
-    pgn = request.form.get('pgn')
-    game = chess.pgn.read_game(io.StringIO(pgn))
-    board = game.board()
-    for move in game.mainline_moves():
-        board.push(move)
-    return {'max_legal_moves': board.legal_moves.count()}
+    try:
+        pgn = request.form.get('pgn')
+        game = chess.pgn.read_game(io.StringIO(pgn))
+        board = game.board()
+        for move in game.mainline_moves():
+            board.push(move)
+        return {'max_legal_moves': board.legal_moves.count()}
+    except: # if new game
+        return {'max_legal_moves': '20'}
 
 # make move API
 @app.route('/make_move', methods=['POST'])
@@ -170,14 +173,12 @@ def make_move():
             'pv': ' '.join([str(move) for move in info['pv']]),
             'nodes': info['nodes'],
             'time': info['time'],
-            #'max_legal_moves': max_legal_moves(board) # (test)
         }
     
     except:
         return {
             'fen': board.fen(),
             'score': '#+1',
-            #'max_legal_moves': max_legal_moves(board) # (test)
         }
 
 
