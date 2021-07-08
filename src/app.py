@@ -97,97 +97,98 @@ def make_move():
     # extract PGN string from HTTP POST request body
     pgn = request.form.get('pgn')
     
-    # probe opening book
-    if probe_book(pgn):
-        return {
-            'score': 'book move',
-            'best_move': probe_book(pgn)
-        }
+    try:
+        # read game moves from PGN
+        game = chess.pgn.read_game(io.StringIO(pgn))
 
-    # read game moves from PGN
-    game = chess.pgn.read_game(io.StringIO(pgn))
+        # init board
+        board = game.board()
 
-    # init board
-    board = game.board()
+        # loop over moves in game
+        for move in game.mainline_moves():
+            # make move on chess board
+            board.push(move)
+        
+        # create chess engine instance
+        engine = chess.engine.SimpleEngine.popen_uci(
+            './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
+        
+        # extract fixed depth value
+        fixed_depth = request.form.get('fixed_depth')
 
-    # loop over moves in game
-    for move in game.mainline_moves():
-        # make move on chess board
-        board.push(move)
-    
-    # create chess engine instance
-    engine = chess.engine.SimpleEngine.popen_uci(
-        './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
-    
-    # extract fixed depth value
-    fixed_depth = request.form.get('fixed_depth')
+        # extract move time value
+        move_time = request.form.get('move_time')
+        
+        # if move time is available
+        if move_time != '0':
+            if move_time == 'instant':
+                try:
+                    # search for best move instantly
+                    info = engine.analyse(board, chess.engine.Limit(time=0.1))
+                except:
+                    info = {}
+            else:
+                try:
+                    # search for best move with fixed move time
+                    info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
+                except:
+                    info = {}
 
-    # extract move time value
-    move_time = request.form.get('move_time')
-    
-    # if move time is available
-    if move_time != '0':
-        if move_time == 'instant':
+        # if fixed depth is available
+        if fixed_depth != '0':
             try:
                 # search for best move instantly
-                info = engine.analyse(board, chess.engine.Limit(time=0.1))
+                info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
             except:
                 info = {}
-        else:
+        
+        # terminate engine process
+        engine.quit()
+        
+        try:
+            # extract best move from PV
+            best_move = info['pv'][0]
+
+            # update internal python chess board state
+            board.push(best_move)
+            
+            # get best score
             try:
-                # search for best move with fixed move time
-                info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
+                score = -int(str(info['score'])) / 100
+            
             except:
-                info = {}
-
-    # if fixed depth is available
-    if fixed_depth != '0':
-        try:
-            # search for best move instantly
-            info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
-        except:
-            info = {}
-    
-    # terminate engine process
-    engine.quit()
-    
-    try:
-        # extract best move from PV
-        best_move = info['pv'][0]
-
-        # update internal python chess board state
-        board.push(best_move)
-        
-        # get best score
-        try:
-            score = -int(str(info['score'])) / 100
+                score = str(info['score'])
+                
+                # inverse score
+                if '+' in score:
+                    score = score.replace('+', '-')
+                
+                elif '-' in score:
+                    score = score.replace('-', '+')
+            
+            return {
+                'fen': board.fen(),
+                'best_move': str(best_move),
+                'score': score,
+                'depth': info['depth'],
+                'pv': ' '.join([str(move) for move in info['pv']]),
+                'nodes': info['nodes'],
+                'time': info['time'],
+            }
         
         except:
-            score = str(info['score'])
-            
-            # inverse score
-            if '+' in score:
-                score = score.replace('+', '-')
-            
-            elif '-' in score:
-                score = score.replace('-', '+')
-          
-        return {
-            'fen': board.fen(),
-            'best_move': str(best_move),
-            'score': score,
-            'depth': info['depth'],
-            'pv': ' '.join([str(move) for move in info['pv']]),
-            'nodes': info['nodes'],
-            'time': info['time'],
-        }
-    
+            return {
+                'fen': board.fen(),
+                'score': '#+1',
+            }
+
     except:
-        return {
-            'fen': board.fen(),
-            'score': '#+1',
-        }
-
+        # probe opening book
+        if probe_book(pgn):
+            return {
+                'score': 'book move',
+                'best_move': probe_book(pgn)
+            }
 
 """
 @app.route('/analytics')
