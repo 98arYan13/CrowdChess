@@ -85,6 +85,12 @@ def max_legal_moves():
     except: # if new game
         return {'max_legal_moves': '20'}
 
+
+# Recommended moves
+app.route('/recommend_moves', methods=['POST'])
+def recommend_moves():
+    pass
+
 # make move API
 @app.route('/make_move', methods=['POST'])
 def make_move():
@@ -99,7 +105,7 @@ def make_move():
         }
 
     # read game moves from PGN
-    game = chess.pgn.read_game(io.StringIO(pgn))    # Using the StringIO method to set as file object. Now we have an object file that we will able to treat just like a file.
+    game = chess.pgn.read_game(io.StringIO(pgn))
 
     # init board
     board = game.board()
@@ -110,7 +116,8 @@ def make_move():
         board.push(move)
     
     # create chess engine instance
-    engine = chess.engine.SimpleEngine.popen_uci('./engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
+    engine = chess.engine.SimpleEngine.popen_uci(
+        './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
     
     # extract fixed depth value
     fixed_depth = request.form.get('fixed_depth')
