@@ -108,6 +108,7 @@
                     <div class="btn-group">
                       <button id="new_game" class="btn btn-outline-secondary">New game</button>
                       <button id="make_move" class="btn btn-outline-secondary">Make move</button>
+                      <button id="recommend_moves" class="btn btn-outline-secondary">Recommend Move(s)</button>
                       <button id="take_back" class="btn btn-outline-secondary">Take back</button>
                       <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
                     </div>
@@ -214,6 +215,19 @@
         'pgn': game.pgn()
       }, function(data) {
         $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
+      });
+  }
+
+  // recommended moves (test)
+  function recommend_moves() {
+    $.post('/make_move',{
+        'pgn': game.pgn(),
+        'fixed_depth': $('#fixed_depth option:selected').val(),
+        'move_time': $('#move_time option:selected').val() 
+      }, function(data) {
+        // 
+        var pv = data.pv;
+        console.log(pv)
       });
   }
 
@@ -365,6 +379,12 @@
     
     // mimic download link click
     $('#download_link')[0].click();
+  });
+
+  // handle Recommend moves button click (test)
+  $('#recommend_moves').on('click', function() {
+    // show recommend move(s)
+    recommend_moves();
   });
 
   // GUI board & game state variables

@@ -16,6 +16,7 @@ import json
 # create web app instance
 app = Flask(__name__)
 
+# just for white first move (computer)
 # probe book move
 def probe_book(pgn):
     # open book file
@@ -89,7 +90,9 @@ def max_legal_moves():
 # Recommended moves
 app.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
-    pass
+    make_move()
+    print({'pv'})
+    return {'pv'}
 
 # make move API
 @app.route('/make_move', methods=['POST'])
