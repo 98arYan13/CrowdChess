@@ -91,7 +91,6 @@ def max_legal_moves():
 app.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
     make_move()
-    print({'pv'})
     return {'pv'}
 
 # make move API

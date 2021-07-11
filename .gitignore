@@ -1,3 +1,5 @@
 test.py
 __pycache__/
-.gitignore/
+.gitignore
+test.ipynb
+analysisBoard.min.js
