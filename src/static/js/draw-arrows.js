@@ -1,19 +1,22 @@
 // source: https://stackoverflow.com/questions/25527902/drawing-arrows-on-a-chess-board-in-javascript
 function drawArrow(arrow) {
+    //create a canvas over the chessboard
     var canvas = '<canvas id="canvas" class="canvas" width="396" height="396"><\/canvas>';
     $("#chess_board").append(canvas);
     //variables to be used when creating the arrow
     var ctx = document.getElementById("canvas").getContext('2d')
-    var headlen = 7;
+    var headlen = 5;
 
     //arrow = "h1a8"
-    var fromx = ((arrow.charCodeAt(0) - 97) * 50 + 25);
-    var tox = ((arrow.charCodeAt(2) - 97) * 50 + 25);
-    var fromy = 396 - (parseInt(arrow[1]) * 49 - 25);
-    var toy = 396 - (parseInt(arrow[3]) * 49 - 25);
-
-    console.log(fromx, tox, fromy, toy)
-    console.log(arrow)
+    
+    // coordinations of tip and tale of arrow by file letter to ascii, and rank number
+    // oriantation = 'white'
+    if(board.orientation() == 'white') {
+        var fromx = ((arrow.charCodeAt(0) - 97) * 50 + 25);
+        var tox = ((arrow.charCodeAt(2) - 97) * 50 + 25);
+        var fromy = 396 - (parseInt(arrow[1]) * 49 - 25);
+        var toy = 396 - (parseInt(arrow[3]) * 49 - 25);
+    }
 
     var angle = Math.atan2(toy-fromy,tox-fromx);
 
@@ -22,7 +25,7 @@ function drawArrow(arrow) {
     ctx.moveTo(fromx, fromy);
     ctx.lineTo(tox, toy);
     ctx.strokeStyle = "#0000FF";
-    ctx.lineWidth = 22;
+    ctx.lineWidth = 15;
     ctx.stroke();
 
     //starting a new path from the head of the arrow to one of the sides of the point
@@ -39,7 +42,7 @@ function drawArrow(arrow) {
 
     //draws the paths created above
     ctx.strokeStyle = "#0000FF";
-    ctx.lineWidth = 22;
+    ctx.lineWidth = 15;
     ctx.stroke();
     ctx.fillStyle = "#0000FF";
     ctx.fill();

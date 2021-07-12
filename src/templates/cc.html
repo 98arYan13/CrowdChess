@@ -51,8 +51,20 @@
               
                   <!-- game controls -->
                   <div class="row mx-auto mb-2" style="width: 400px;">
+
                     <!-- game status -->
                     <strong class="mx-auto mb-2"><div id="status"></div></strong>
+
+                    <!-- choose computer recommend move -->
+                    <div id="recommend_choices" class="row mx-auto mb-2">
+                      <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
+                      <div class="btn-group ml-2">
+                        <button id="choice1" type="button" class="btn btn-primary">choice1</button>
+                        <button id="choice2" type="button" class="btn btn-primary">choice2</button>
+                        <button id="choice3" type="button" class="btn btn-primary">choice3</button>
+                      </div>
+                    </div>
+
 
                     <!-- FEN -->
                     <div class="input-group mb-3">
@@ -208,6 +220,9 @@
 </html>
 
 <script>
+  // hide recommended choices by computer to users by default
+  $('#recommend_choices').hide()
+
   // max legal moves
   function max_legal_moves() {
     $.post('/max_legal_moves',{
@@ -216,7 +231,7 @@
         $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
       });
   }
-
+  
   // recommended moves (test)
   function recommend_moves() {
     $.post('/make_move',{
@@ -224,11 +239,54 @@
         'fixed_depth': $('#fixed_depth option:selected').val(),
         'move_time': $('#move_time option:selected').val() 
       }, function(data) {
-        // 
-        let pv = data.pv;
-        let arrow = pv.substring(0,4)
-        drawArrow(arrow);
+
+        //convert str to arr
+        let pvArray = data.pv.split(" ");
+        console.log(pvArray)
+
+        //user's pv array
+        uArray = [pvArray[0]];
+        $('#recommend_choices').show()
+        $('#choice2').hide()
+        $('#choice3').hide()
+        if(pvArray.length >= 4) {
+          uArray.push(pvArray[2]);
+          $('#choice2').show()
+        }
+        if(pvArray.length >= 6) {
+          uArray.push(pvArray[4]);
+          $('#choice3').show()
+        }
+        console.log(uArray)
+
+        //randomise array
+        for (let i = uArray.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [uArray[i], uArray[j]] = [uArray[j], uArray[i]];
+        }
+        console.log(uArray)
+
+        //draw arrow of recommended choice
+        
+        $('#choice1').on('click', function() {
+          $("#canvas").remove();
+          uArrow = uArray[0]; //for user's arrow
+          drawArrow(uArrow);
+        });
+        $('#choice2').on('click', function() {
+          $("#canvas").remove();
+          uArrow = uArray[1]; //for user's arrow
+          drawArrow(uArrow);
+        });
+        $('#choice3').on('click', function() {
+          $("#canvas").remove();
+          uArrow = uArray[2]; //for user's arrow
+          drawArrow(uArrow);
+        });
+
       });
+    // hide recommended choices by computer to users
+    $('#recommend_choices').hide()
   }
 
   // make computer move
