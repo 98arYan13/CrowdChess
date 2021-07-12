@@ -343,6 +343,7 @@
   
   // handle take back button click
   $('#take_back').on('click', function() {
+    $('#canvas').remove();
     // take move back
     game.undo();
     game.undo();
@@ -360,6 +361,7 @@
   $('#flip_board').on('click', function() {
     // flip board
     board.flip();
+    $("#canvas").remove();
     
   });
   
@@ -382,6 +384,7 @@
     if (game.load($('#fen').val())) {
       // set board position
       board.position(game.fen());
+      $("#canvas").remove();
 
       max_legal_moves();
     }
@@ -597,4 +600,5 @@
 
   // update game status
   updateStatus();
+  
 </script>

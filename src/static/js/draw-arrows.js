@@ -46,4 +46,9 @@ function drawArrow(arrow) {
     ctx.stroke();
     ctx.fillStyle = "#0000FF";
     ctx.fill();
+
+    // remove canvas on click over boardchess if existed
+    $('#canvas').on('click', function() {
+        $('#canvas').remove();
+    });
 }
