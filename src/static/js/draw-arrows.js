@@ -1,8 +1,11 @@
 // source: https://stackoverflow.com/questions/25527902/drawing-arrows-on-a-chess-board-in-javascript
-function drawArrow(arrow) {
+function drawArrow(arrow, color) {
     //create a canvas over the chessboard
-    var canvas = '<canvas id="canvas" class="canvas" width="396" height="396"><\/canvas>';
-    $("#chess_board").append(canvas);
+    if ($("#canvas").length === 0) {
+        var canvas = '<canvas id="canvas" class="canvas" width="396" height="396"><\/canvas>';
+        $("#chess_board").append(canvas);
+    }
+    
     //variables to be used when creating the arrow
     var ctx = document.getElementById("canvas").getContext('2d')
     var headlen = 5;
@@ -17,6 +20,13 @@ function drawArrow(arrow) {
         var fromy = 396 - (parseInt(arrow[1]) * 49 - 25);
         var toy = 396 - (parseInt(arrow[3]) * 49 - 25);
     }
+    // oriantation = 'black'
+    if(board.orientation() == 'black') {
+        var fromx = 396 - ((arrow.charCodeAt(0) - 97) * 50 + 25);
+        var tox = 396 - ((arrow.charCodeAt(2) - 97) * 50 + 25);
+        var fromy = (parseInt(arrow[1]) * 49 - 25);
+        var toy = (parseInt(arrow[3]) * 49 - 25);
+    }
 
     var angle = Math.atan2(toy-fromy,tox-fromx);
 
@@ -24,7 +34,7 @@ function drawArrow(arrow) {
     ctx.beginPath();
     ctx.moveTo(fromx, fromy);
     ctx.lineTo(tox, toy);
-    ctx.strokeStyle = "#0000FF";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 15;
     ctx.stroke();
 
@@ -41,14 +51,15 @@ function drawArrow(arrow) {
     ctx.lineTo(tox-headlen*Math.cos(angle-Math.PI/7),toy-headlen*Math.sin(angle-Math.PI/7));
 
     //draws the paths created above
-    ctx.strokeStyle = "#0000FF";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 15;
     ctx.stroke();
-    ctx.fillStyle = "#0000FF";
+    ctx.fillStyle = color;
     ctx.fill();
 
     // remove canvas on click over boardchess if existed
     $('#canvas').on('click', function() {
         $('#canvas').remove();
     });
+    
 }
