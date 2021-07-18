@@ -295,23 +295,22 @@
         $("#confirm_choice").on('click', function() {
           // load fen into the current board state
           game.move(uArrow, { sloppy: true })
-
           // update board position
           board.position(game.fen());
-
           // update game status
           updateStatus();
 
           // if oArrow exists then move that, else call make_move
           if(oArrow) {
-            // load fen into the current board state
-            game.move(oArrow, { sloppy: true })
-
-            // update board position
-            board.position(game.fen());
-
-            // update game status
-            updateStatus();
+            // executed after 200 miliseconds
+            setTimeout(function() {
+              // load fen into the current board state
+              game.move(oArrow, { sloppy: true })
+              // update board position
+              board.position(game.fen());
+              // update game status
+              updateStatus();
+            }, 200);
           }
           else {
             make_move();
@@ -319,16 +318,15 @@
           
           max_legal_moves();
 
+          // remove canvas
           $('#canvas').remove();
-          
+          // remove previous choices button
+          $('#choices').empty();
+          // hide recommended choices by computer to users
+          $('#recommend_choices').hide()
         });
 
-        // remove previous choices button
-        $('btn btn-primary').remove();
-
       });
-    // hide recommended choices by computer to users
-    $('#recommend_choices').hide()
   }
 
   // make computer move
