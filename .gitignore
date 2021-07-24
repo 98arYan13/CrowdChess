@@ -3,3 +3,4 @@ __pycache__/
 .gitignore
 test.ipynb
 analysisBoard.min.js
+db.sqlite
