@@ -1,17 +1,16 @@
 # packages
-from flask import Flask
-from flask import render_template
-from flask import request
+from flask import Flask, Response, redirect, url_for, \
+    request, session, abort, render_template, jsonify
+from flask_login import LoginManager, UserMixin, \
+    login_required, login_user, logout_user, current_user
 import chess
 import chess.engine
 import chess.pgn
 import io
 import random
-from flask import jsonify
-from flask import Response
-from flask_pymongo import PyMongo
 from datetime import datetime
 import json
+import config
 
 # create web app instance
 app = Flask(__name__)
