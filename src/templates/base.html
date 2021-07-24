@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	{% block head %}
+	<meta charset="utf-8">
+	<title>{% block title %}{% endblock %} - Crowd Chess (WoC)</title>
+	
+	<!-- TODO: change favicon -->
+	<!-- favicon -->
+	<link rel="shortcut icon" href="/static/favicon.ico">
+	
+	
+	{% endblock %}
+</head>
+
+<body>
+	<div id="content">{% block content %}{% endblock %}</div>
+
+	<div id="footer" class="card-footer">
+		{% block footer %}
+			<!-- TODO: edit footer -->
+				<!-- links -->
+				<div class="input-group mt-2 mb-3">
+					<a href="https://github.com/98arYan13/CrowdChess" class="mx-auto ml-2">CrowdChess (WoC) source code</a>
+					<a href="mailto:ikoiran@gmail.com" class="text-dark nav-link mx-auto">
+						<strong class="ml-2 mt-1">ikoiran@gmail.com</strong>
+					</a>
+					<!--<a class="btn btn-warning mx-auto">حمایت مالی</a>-->
+				</div>
+		{% endblock %}
+	</div>
+
+</body>
+</html>

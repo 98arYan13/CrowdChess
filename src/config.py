@@ -3,4 +3,4 @@
 
 USERNAME = 'majid'
 PASS = 'password'
-SECRET_KEY = 'top secret' # > py -c 'import os; print(os.urandom(16))'
+SECRET_KEY = 'top secret' # use this command: py -c 'import os; print(os.urandom(16))'

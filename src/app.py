@@ -20,7 +20,7 @@ app = Flask(__name__)
 # root(index) route
 @app.route('/')
 def root():
-    return render_template('cc.html')
+    return render_template('index.html')
 
 # Maximum legal moves for current playable color
 @app.route('/max_legal_moves', methods=['POST'])
