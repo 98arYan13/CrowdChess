@@ -1,7 +1,7 @@
 # this is for admin login
 # change secret_key & password
 
-USERNAME = 'majid'
+USERNAME = 'user'
 PASS = 'password'
 SECRET_KEY = "top secret" # TODO: use this command: py -c 'import os; print(os.urandom(16))'
 
