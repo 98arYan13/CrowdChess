@@ -23,17 +23,17 @@ class User(UserMixin, db.Model):
         unique=True,
         nullable=False
     )
-    mobile = db.Column(
-        db.String(20),
-        unique=True,
-        nullable=False
-    )
     password = db.Column(
         db.String(200),
         primary_key=False,
         unique=False,
         nullable=False
 	)
+    '''mobile = db.Column(
+        db.String(20),
+        unique=True,
+        nullable=True
+    )
     created_on = db.Column(
         db.DateTime,
         index=False,
@@ -45,7 +45,7 @@ class User(UserMixin, db.Model):
         index=False,
         unique=False,
         nullable=True
-    )
+    )'''
 
     def set_password(self, password):
         # Create hashed password
