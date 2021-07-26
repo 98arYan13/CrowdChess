@@ -1,9 +1,7 @@
-# packages
+# chess processes for CrowdChess (cc)
 from flask import Flask, Response, redirect, url_for, \
     request, session, abort, render_template, jsonify
 from flask.blueprints import Blueprint
-from flask_login import LoginManager, UserMixin, \
-    login_required, login_user, logout_user, current_user
 import chess
 import chess.engine
 import chess.pgn
