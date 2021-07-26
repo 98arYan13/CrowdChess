@@ -189,10 +189,16 @@
       });
   }
   
-  // recommended moves (test)
+  // recommended moves
   function recommend_moves() {
     // disable take back button
     $('#take_back').attr('disabled', true);
+
+    // remove previous choices button if remained from before
+    $('#choices').empty();
+
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
 
     $.post('/recommend_moves',{
         'pgn': game.pgn(),
@@ -327,6 +333,9 @@
   // handle new game button click
   $('#new_game').on('click', function() {
 
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+
     // reset board state
     game.reset();
     
@@ -338,12 +347,18 @@
   
   // handle make move button click
   $('#make_move').on('click', function() {
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+
     // make computer move
     make_move();
   });
   
   // handle take back button click
   $('#take_back').on('click', function() {
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+    
     $('#canvas').remove();
     // take move back
     game.undo();
@@ -442,7 +457,7 @@
     $('#download_link')[0].click();
   });
 
-  // handle Recommend Moves button click (test)
+  // handle Recommend Moves button click
   $('#recommend_moves').on('click', function() {
     // show recommend move(s)
     recommend_moves();
