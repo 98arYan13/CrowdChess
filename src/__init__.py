@@ -38,4 +38,8 @@ def create_app():
     from main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    # blueprint for chess processes CrowdChess (cc)
+    from cc import cc as cc_blueprint
+    app.register_blueprint(cc_blueprint)
+
     return app

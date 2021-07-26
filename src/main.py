@@ -7,6 +7,7 @@ from __init__ import create_app, db
 main = Blueprint('main', __name__)
 
 @main.route('/') # home page that return 'index'
+@login_required
 def index():
     return render_template('index.html')
 

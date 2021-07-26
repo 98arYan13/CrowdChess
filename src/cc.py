@@ -1,6 +1,7 @@
 # packages
 from flask import Flask, Response, redirect, url_for, \
     request, session, abort, render_template, jsonify
+from flask.blueprints import Blueprint
 from flask_login import LoginManager, UserMixin, \
     login_required, login_user, logout_user, current_user
 import chess
@@ -12,15 +13,10 @@ from datetime import datetime
 import json
 
 
-
-# root(index) route
-@app.route('/')
-@login_required
-def root():
-    return render_template('index.html')
+cc = Blueprint('cc', __name__)
 
 # Maximum legal moves for current playable color
-@app.route('/max_legal_moves', methods=['POST'])
+@cc.route('/max_legal_moves', methods=['POST'])
 def max_legal_moves():
     try:
         pgn = request.form.get('pgn')
@@ -33,7 +29,7 @@ def max_legal_moves():
         return {'max_legal_moves': '20'}
 
 # make move API
-@app.route('/make_move', methods=['POST'])
+@cc.route('/make_move', methods=['POST'])
 def make_move():
     # extract PGN string from HTTP POST request body
     pgn = request.form.get('pgn')
@@ -129,7 +125,7 @@ def make_move():
         }
 
 # Recommended moves
-@app.route('/recommend_moves', methods=['POST'])
+@cc.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
     # set number of multipv lines for recommended moves
     MULTIPV = 3
@@ -256,13 +252,3 @@ def get():
 """
 
 
-# callback to reload the user object        
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
-
-
-# main driver
-if __name__ == '__main__':
-    # start HTTP server
-    app.run(debug=True, threaded=True)
