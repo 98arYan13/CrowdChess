@@ -187,14 +187,9 @@ def recommend_moves():
     # terminate engine process
     engine.quit()
     
-    print('best move is: ', info[0]['pv'][0])
-
-    print("\ninfo:\n", info)
+    # randomising info dict for create a serie of random ordered recommend moves
     random.shuffle(info)
 
-    print("randomised first pv: ", info[0]['pv'][0])
-    print("\ninfo_shuffled:\n", info)
-        
     return {
         'fen': board.fen(),
         'score_array': [str(i['score']) for i in info],
