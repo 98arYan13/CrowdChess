@@ -1,0 +1,564 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+  
+	<!-- chessjs -->
+  <script src="/static/js/chess.js"></script>
+
+  <!-- chessboardjs -->
+  <link rel="stylesheet" href="/static/css/chessboard-1.0.0.min.css">
+  <script src="/static/js/chessboard-1.0.0.min.js"></script>
+  
+  <!-- draw-arrows-js -->
+  <link rel="stylesheet" href="/static/css/draw-arrows.css">
+  <script src="/static/js/draw-arrows.js"></script>
+
+{% endblock %}
+{% block content %}
+  <div class="col">
+    <div class="row">
+      <div class="col">
+        <div class="card mt-2">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-5">
+
+                <!-- chess board view -->
+                <div id="chess_board" class="row mx-auto mb-2" style="width: 400px; height: 400px;">
+                </div>
+            
+                <!-- game controls -->
+                <div class="row mx-auto mb-2" style="width: 400px;">
+
+                  <!-- game status -->
+                  <strong class="mx-auto mb-2"><div id="status"></div></strong>
+
+                  <!-- choose computer recommend move -->
+                  <div id="recommend_choices" class="row mx-auto mt-2 mb-2">
+                    <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
+                    <div id="choices" class="btn-group ml-2">
+                    </div>
+                  </div>
+
+                  <!-- FEN -->
+                  <p class="input-group-sm mb-3" style="width: 400px;">
+                    <input id="fen" type="text" class="form-control" readonly>
+                    <!-- The button used to copy the FEN -->
+                    <div class="input-group-append">
+                      <button id="copy_fen" class="btn-sm btn-success">Copy FEN</button>
+                    </div>
+                  </p>
+                  
+                  <!-- -buttons -->
+                  <div class="btn-group">
+                    <button id="new_game" class="btn btn-outline-secondary">New game</button>
+                    <button id="make_move" class="btn btn-outline-secondary">Make move</button>
+                    <button id="recommend_moves" class="btn btn-outline-secondary">Recommend Move(s)</button>
+                    <button id="take_back" class="btn btn-outline-secondary">Take back</button>
+                    <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
+                  </div>
+                  
+                </div>
+              </div>
+              <div class="col mx-auto">
+                <div class="row mx-auto">    
+                  <div class="col">
+
+                    <!-- CrowdChess info -->
+                    <p class="h3 mx-auto"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
+
+                    <!-- engine info -->
+                    <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
+                    <a href="https://github.com/maksimKorzh/uci-gui"><small class="ml-2">uci-gui by Code Monkey King</small></a>
+                    </p>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <!-- info -->
+                <div class="row mx-auto mt-2">
+                  <small class="mx-auto">
+                    <!-- TODO: add note -->
+                    NOTE: !
+                  </small>
+                </div>
+                
+                <!-- game info -->
+                <table class="table text-center mt-4">
+                  <thead>
+                    <tr>
+                      <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
+                      <th>Score</th>
+                      <th>Depth</th>
+                      <th>Time</th>
+                      <th>Nodes</th>
+                      <th>Knps</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="max_legal_moves"></td>
+                      <td><strong id="score" class="text-danger"></strong></td>
+                      <td id="depth"></td>
+                      <td id="time"></td>
+                      <td id="nodes"></td>
+                      <td id="knps"></td>
+                    <tr>
+                  </tbody>
+                </table>
+                <hr>
+                
+                <!-- PGN output -->
+                <div class="mt-2"><strong>PGN:</strong></div>
+                <div id="pgn"></div>
+                
+                <!-- download button -->
+                <button id="download_button" class="btn btn-success mt-2">Download</button>
+                
+                <!-- download link -->
+                <a id="download_link" href="" download="" hidden>your pgn</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // hide recommended choices by computer to users by default
+  $('#recommend_choices').hide()
+
+  // max legal moves
+  function max_legal_moves() {
+    $.post('/max_legal_moves',{
+        'pgn': game.pgn()
+      }, function(data) {
+        $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
+      });
+  }
+  
+  // recommended moves
+  function recommend_moves() {
+    // disable take back button
+    $('#take_back').attr('disabled', true);
+
+    // remove previous choices button if remained from before
+    $('#choices').empty();
+
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+
+    $.post('/recommend_moves',{
+        'pgn': game.pgn(),
+        'fen': game.fen(),
+        'fixed_depth': $('#fixed_depth option:selected').val(),
+        'move_time': $('#move_time option:selected').val() 
+      }, function(data) {
+
+        for (let i = 1; i <= data.pv_array.length; i++) {
+          // pv of every multipv line
+          let pvArr = data.pv_array[i-1].split(" ");
+          // name of choice button
+          buttonName = pvArr[0]
+          var r = $('<button id="choice'+i+'" type="button" class="btn btn-primary">'+buttonName+'</button>')
+          $("#choices").append(r);
+          
+          // re-enable take back button
+          $('#take_back').attr('disabled', false);
+        }
+
+        $('#recommend_choices').show();
+
+        //draw arrow of recommended choice(s)
+        // TODO: must be dynamically change amount of these below functions based-on multipv lines (recommended moves number)
+        $('#choice1').on('click', function() {
+          $("#canvas").remove();
+          let pvArr = data.pv_array[0].split(" ");
+          uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
+          drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
+          oArrow = null
+          if(pvArr.length >= 2) {
+            oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
+            drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
+          }
+        });
+        $('#choice2').on('click', function() {
+          $("#canvas").remove();
+          let pvArr = data.pv_array[1].split(" ");
+          uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
+          drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
+          oArrow = null
+          if(pvArr.length >= 2) {
+            oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
+            drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
+          }
+        });
+        $('#choice3').on('click', function() {
+          $("#canvas").remove();
+          let pvArr = data.pv_array[2].split(" ");
+          uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
+          drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
+          oArrow = null
+          if(pvArr.length >= 2) {
+            oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
+            drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
+          }
+        });
+
+        // confirm choice and move
+        $("#confirm_choice").on('click', function() {
+          // load fen into the current board state
+          game.move(uArrow, { sloppy: true })
+          // update board position
+          board.position(game.fen());
+          // update game status
+          updateStatus();
+
+          // if oArrow exists then move that, else call make_move
+          if(oArrow) {
+            // executed after 200 miliseconds
+            setTimeout(function() {
+              // load fen into the current board state
+              game.move(oArrow, { sloppy: true })
+              // update board position
+              board.position(game.fen());
+              // update game status
+              updateStatus();
+            }, 200);
+          }
+          else {
+            make_move();
+          };
+          
+          max_legal_moves();
+
+          // remove canvas
+          $('#canvas').remove();
+          // remove previous choices button
+          $('#choices').empty();
+          // hide recommended choices by computer to users
+          $('#recommend_choices').hide()
+        });
+
+      });
+  }
+
+  // make computer move
+  function make_move() {
+    // disable take back button
+    $('#take_back').attr('disabled', true);
+
+    // make HTTP POST request to make move API
+    $.post('/make_move',{
+        'pgn': game.pgn(),
+        'fen': game.fen(),
+        'fixed_depth': $('#fixed_depth option:selected').val(),
+        'move_time': $('#move_time option:selected').val() 
+      }, function(data) {
+        // load fen into the current board state
+        game.move(data.best_move, { sloppy: true })
+
+        // update board position
+        board.position(game.fen());
+
+        // update game info
+        $score.text(data.score);
+        $depth.text(data.depth);
+        $time.text(data.time);
+        $nodes.text(data.nodes);
+        $knps.text(Math.round(Number($nodes.text()) / parseFloat($time.text())) / 1000)
+
+        // update game status
+        updateStatus();
+        
+        max_legal_moves();
+
+        // re-enable take back button
+        $('#take_back').attr('disabled', false);
+    });
+  }
+
+  // handle new game button click
+  $('#new_game').on('click', function() {
+
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+
+    // reset board state
+    game.reset();
+    
+    // set initial board position
+    board.position('start');
+
+    max_legal_moves();
+  });
+  
+  // handle make move button click
+  $('#make_move').on('click', function() {
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+
+    // make computer move
+    make_move();
+  });
+  
+  // handle take back button click
+  $('#take_back').on('click', function() {
+    // hide remained recommend_choices from before
+    $('#recommend_choices').hide()
+    
+    $('#canvas').remove();
+    // take move back
+    game.undo();
+    game.undo();
+    
+    // update board position
+    board.position(game.fen());
+
+    max_legal_moves();
+    
+    // update game status
+    updateStatus();
+  });
+  
+  // handle flip board button click
+  $('#flip_board').on('click', function() {
+    // flip board
+    board.flip();
+    $("#canvas").remove();    
+  });
+  
+  // handle select move time option
+  $('#move_time').on('change', function() {
+    // disable fixed depth
+    $('#fixed_depth').val('0');
+  });
+  
+  // handle select fixed depth option
+  $('#fixed_depth').on('change', function() {
+    // disable fixed depth
+    $('#move_time').val('0');
+  });
+  
+  // handle Copy FEN button click
+  $('#copy_fen').on('click', function() {
+    
+    var copyText = document.getElementById("fen");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+    alert("Copied the text: " + copyText.value);
+  });
+  
+  // handle download button click
+  $('#download_button').on('click', function() {
+    // init date
+    var date = new Date();
+    
+    // PGN header
+    var pgn_header = '';
+    
+    // get user name
+    var user_name = prompt('What is your name?');
+    
+    // get user color
+    var user_color = prompt('What color did you play with? (please type "White" or "Black")');
+    
+    // if user color is white
+    if (user_color == 'White')
+    {
+      // init PGN header
+      pgn_header = '[White "' + user_name + '"]\n[Black "Stockfish"]\n\n';
+      
+      // init PGN filename
+      $('#download_link').attr('download', user_name + '_vs_Stockfish_' + date.toString().replace(/\s/g, "_") + '.pgn');
+    }
+    // if user color is black
+    else if (user_color == 'Black')
+    {
+      // init PGN header
+      pgn_header = '[White "Stockfish 1.2"]\n[Black "' + user_name + '"]\n\n';
+      
+      // init PGN filename
+      $('#download_link').attr('download', 'Stockfish_vs_' + user_name + '_' + date.toString().replace(/\s/g, "_") + '.pgn');
+    }
+    // otherwise it's error
+    else
+    {
+      alert('Color is illegal, please type "White" or "Black"');
+      return; 
+    }
+    
+    // init download link
+    $('#download_link').attr('href', window.URL.createObjectURL(
+      new Blob([pgn_header + game.pgn()], {type: 'text'})
+    ));
+    
+    // mimic download link click
+    $('#download_link')[0].click();
+  });
+
+  // handle Recommend Moves button click
+  $('#recommend_moves').on('click', function() {
+    // show recommend move(s)
+    recommend_moves();
+  });
+
+  // GUI board & game state variables
+  var board = null;
+  var game = new Chess();
+  var $status = $('#status');
+  var $fen = $('#fen');
+  var $pgn = $('#pgn');
+  var $score = $('#score');
+  var $depth = $('#depth');
+  var $time = $('#time');
+  var $nodes = $('#nodes');
+  var $knps = $('#knps');
+  var whiteSquareGrey = '#a9a9a9'
+  var blackSquareGrey = '#696969'
+  var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
+
+  // remove grey squares
+  function removeGreySquares () {
+    $('#chess_board .square-55d63').css('background', '')
+  }
+
+  function greySquare (square) {
+    var $square = $('#chess_board .square-' + square)
+
+    var background = whiteSquareGrey
+    if ($square.hasClass('black-3c85d')) {
+      background = blackSquareGrey
+    }
+
+    $square.css('background', background)
+  }
+
+  // on picking up a piece
+  function onDragStart (source, piece, position, orientation) {
+    // do not pick up pieces if the game is over
+    if (game.game_over()) return false
+
+    // only pick up pieces for the side to move
+    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+      return false
+    }
+  }
+
+  // on dropping piece
+  function onDrop (source, target) {
+
+    removeGreySquares()
+    
+    // see if the move is legal
+    var move = game.move({
+      from: source,
+      to: target,
+      promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    })
+
+    // illegal move
+    if (move === null) return 'snapback'
+
+    // make computer move
+    make_move();
+
+    // update game status
+    updateStatus();
+  }
+
+  // highlight legal moves
+  function onMouseoverSquare (square, piece) {
+    // get list of possible moves for this square
+    var moves = game.moves({
+      square: square,
+      verbose: true
+    })
+
+    // exit if there are no moves available for this square
+    if (moves.length === 0) return
+
+    // highlight the square they moused over
+    greySquare(square)
+
+    // highlight the possible squares for this piece
+    for (var i = 0; i < moves.length; i++) {
+      greySquare(moves[i].to)
+    }
+  }
+
+  function onMouseoutSquare (square, piece) {
+    removeGreySquares()
+  }
+
+  // update the board position after the piece snap
+  // for castling, en passant, pawn promotion
+  function onSnapEnd () {
+    board.position(game.fen())
+  }
+
+  // update game status
+  function updateStatus () {
+    var status = ''
+
+    var moveColor = 'White'
+    if (game.turn() === 'b') {
+      moveColor = 'Black'
+    }
+
+    // checkmate?
+    if (game.in_checkmate()) {
+      status = 'Game over, ' + moveColor + ' is in checkmate.'
+    }
+
+    // draw?
+    else if (game.in_draw()) {
+      status = 'Game over, drawn position'
+    }
+
+    // game still on
+    else {
+      status = moveColor + ' to move'
+
+      // check?
+      if (game.in_check()) {
+        status += ', ' + moveColor + ' is in check'
+      }
+    }
+
+    // update DOM elements
+    $status.html(status)
+    $fen.val(game.fen())
+    $pgn.html(game.pgn())
+  }
+
+  // chess board configuration
+  var config = {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onSnapEnd: onSnapEnd,
+    sparePieces: false, // If true: add spare pieces, but not useful I think.
+    onMouseoutSquare: onMouseoutSquare,
+    onMouseoverSquare: onMouseoverSquare
+  }
+  
+  // create chess board widget instance
+  board = Chessboard('chess_board', config)
+  
+  // prevent scrolling on touch devices
+  $('#chess_board').on('scroll touchmove touchend touchstart contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // update game status
+  updateStatus();
+  
+</script>
+{% endblock %}
