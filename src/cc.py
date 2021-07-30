@@ -9,6 +9,7 @@ import io
 import random
 from datetime import datetime
 import json
+import config
 
 
 cc = Blueprint('cc', __name__)
@@ -17,6 +18,7 @@ cc = Blueprint('cc', __name__)
 @cc.route('/max_legal_moves', methods=['POST'])
 def max_legal_moves():
     try:
+        # TODO: better to use fen instead of pgn
         pgn = request.form.get('pgn')
         game = chess.pgn.read_game(io.StringIO(pgn))
         board = game.board()
@@ -58,7 +60,11 @@ def make_move():
 
     # extract move time value
     move_time = request.form.get('move_time')
-    
+
+    # move_time by default if none
+    if move_time == None:
+        move_time = config.move_time
+
     # if move time is available
     if move_time != '0':
         if move_time == 'instant':
@@ -73,7 +79,7 @@ def make_move():
                 info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
             except:
                 info = {}
-
+    """
     # if fixed depth is available
     if fixed_depth != '0':
         try:
@@ -81,6 +87,7 @@ def make_move():
             info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
         except:
             info = {}
+    """
     
     # terminate engine process
     engine.quit()
@@ -158,6 +165,10 @@ def recommend_moves():
     # extract move time value
     move_time = request.form.get('move_time')
     
+    # move_time by default if none
+    if move_time == None:
+        move_time = config.move_time
+
     # if move time is available
     if move_time != '0':
         if move_time == 'instant':
@@ -175,6 +186,7 @@ def recommend_moves():
             except:
                 info = {}
 
+    """
     # if fixed depth is available
     if fixed_depth != '0':
         try:
@@ -183,6 +195,7 @@ def recommend_moves():
                 board, chess.engine.Limit(depth=int(fixed_depth)), multipv=MULTIPV)
         except:
             info = {}
+    """
     
     # terminate engine process
     engine.quit()
