@@ -3,13 +3,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import config
+from flask_socketio import SocketIO, Namespace, emit
 
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 
+# socketio
+socketio = SocketIO()
 
-def create_app():
+def create_app(debug=False):
     # Construct the core app object
     app = Flask(__name__)
 
@@ -17,6 +20,7 @@ def create_app():
     app.config.update(SECRET_KEY=config.SECRET_KEY)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' # it is the path where the SQLite database file will be saved
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # deactivate Flask-SQLAlchemy track modifications
+    app.debug = debug
 
     # Initialize Plugins
     db.init_app(app) # Initialiaze sqlite database
@@ -41,5 +45,7 @@ def create_app():
     # blueprint for chess processes CrowdChess (cc)
     from cc import cc as cc_blueprint
     app.register_blueprint(cc_blueprint)
+
+    socketio.init_app(app)
 
     return app
