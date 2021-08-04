@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}User{% endblock %}
 {% block head %}
   {{ super() }}
   
@@ -11,119 +11,112 @@
   <script src="/static/js/chessboard-1.0.0.min.js"></script>
   
   <!-- draw-arrows-js -->
-  <link rel="stylesheet" href="/static/css/draw-arrows.css">
   <script src="/static/js/draw-arrows.js"></script>
 
 {% endblock %}
 {% block content %}
-  <div class="col">
-    <div class="row">
-      <div class="col">
-        <div class="card mt-2">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-5">
+  <div class="row">
+    <div class="col-5">
 
-                <!-- chess board view -->
-                <div id="chess_board" class="row mx-auto mb-2" style="width: 400px; height: 400px;">
-                </div>
-            
-                <!-- game controls -->
-                <div class="row mx-auto mb-2" style="width: 400px;">
+      <!-- chess board view -->
+      <div id="chess_board" class="row mx-auto mb-2" style="width: 400px; height: 400px;">
+      </div>
+  
+      <!-- game controls -->
+      <div class="row mx-auto mb-2" style="width: 400px;">
 
-                  <!-- game status -->
-                  <strong class="mx-auto mb-2"><div id="status"></div></strong>
+        <!-- game status -->
+        <strong class="mx-auto"><div id="status"></div></strong>
+        <hr>
 
-                  <!-- choose computer recommend move -->
-                  <div id="recommend_choices" class="row mx-auto mt-2 mb-2">
-                    <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
-                    <div id="choices" class="btn-group ml-2">
-                    </div>
-                  </div>
 
-                  <!-- FEN -->
-                  <p class="input-group-sm mb-3" style="width: 400px;">
-                    <input id="fen" type="text" class="form-control" readonly>
-                    <!-- The button used to copy the FEN -->
-                    <div class="input-group-append">
-                      <button id="copy_fen" class="btn-sm btn-success">Copy FEN</button>
-                    </div>
-                  </p>
-                  
-                  <!-- -buttons -->
-                  <div class="btn-group">
-                    <button id="new_game" class="btn btn-outline-secondary">New game</button>
-                    <button id="make_move" class="btn btn-outline-secondary">Make move</button>
-                    <button id="recommend_moves" class="btn btn-outline-secondary">Recommend Move(s)</button>
-                    <button id="take_back" class="btn btn-outline-secondary">Take back</button>
-                    <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
-                  </div>
-                  
-                </div>
-              </div>
-              <div class="col mx-auto">
-                <div class="row mx-auto">    
-                  <div class="col">
 
-                    <!-- CrowdChess info -->
-                    <p class="h3 mx-auto"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
+        <!-- -buttons -->
+        <div class="btn-group">
+          <button id="new_game" class="btn btn-outline-secondary">New game</button>
+          <button id="take_back" class="btn btn-outline-secondary">Take back</button>
+          <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
+          <button id="recommend_moves" class="btn btn-outline-secondary">Recommend Move(s)</button>
+        </div>
+        <hr>
 
-                    <!-- engine info -->
-                    <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
-                    <a href="https://github.com/maksimKorzh/uci-gui"><small class="ml-2">uci-gui by Code Monkey King</small></a>
-                    </p>
-                  </div>
-                </div>
-                
-                <hr>
-                
-                <!-- info -->
-                <div class="row mx-auto mt-2">
-                  <small class="mx-auto">
-                    <!-- TODO: add note -->
-                    NOTE: !
-                  </small>
-                </div>
-                
-                <!-- game info -->
-                <table class="table text-center mt-4">
-                  <thead>
-                    <tr>
-                      <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
-                      <th>Score</th>
-                      <th>Depth</th>
-                      <th>Time</th>
-                      <th>Nodes</th>
-                      <th>Knps</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td id="max_legal_moves"></td>
-                      <td><strong id="score" class="text-danger"></strong></td>
-                      <td id="depth"></td>
-                      <td id="time"></td>
-                      <td id="nodes"></td>
-                      <td id="knps"></td>
-                    <tr>
-                  </tbody>
-                </table>
-                <hr>
-                
-                <!-- PGN output -->
-                <div class="mt-2"><strong>PGN:</strong></div>
-                <div id="pgn"></div>
-                
-                <!-- download button -->
-                <button id="download_button" class="btn btn-success mt-2">Download</button>
-                
-                <!-- download link -->
-                <a id="download_link" href="" download="" hidden>your pgn</a>
-              </div>
-            </div>
+        <!-- choose computer recommend move -->
+        <div id="recommend_choices" class="row mx-auto mt-2 mb-2" style="width: 400px;">
+          <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
+          <div id="choices" class="btn-group ml-2">
           </div>
         </div>
+        <hr>
+
+        <!-- FEN -->
+        <nav class="navbar navbar-expand" style="width: 400px;">
+          <div class="input-group-sm mx-auto mb-2" style="width: 400px;">FEN:
+            <input id="fen" type="text" class="form-control float-left" style="font-size: 12px;" readonly>
+            <!-- The button used to copy the FEN -->
+            <div class="input-group-append">
+              <button id="copy_fen" class="btn btn-info float-right">Copy FEN</button>
+            </div>
+          </div>
+        </nav>
+        
       </div>
+    </div>
+    <div class="col mx-auto">
+      <div class="row mx-auto">    
+        <div class="col">
+
+          <!-- CrowdChess info -->
+          <p class="h3 mx-auto"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
+
+          <!-- engine info -->
+          <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
+        </div>
+      </div>
+      
+      <hr>
+      
+      <!-- info -->
+      <div class="row mx-auto mt-2">
+        <small class="mx-auto">
+          <!-- TODO: add note -->
+          NOTE: !
+        </small>
+      </div>
+      
+      <!-- game info -->
+      <table class="table text-center mt-4" style="font-size: small;">
+        <thead>
+          <tr>
+            <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
+            <th>Score</th>
+            <th>Depth</th>
+            <th>Time</th>
+            <th>Nodes</th>
+            <th>Knps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="max_legal_moves"></td>
+            <td><strong id="score" class="text-danger"></strong></td>
+            <td id="depth"></td>
+            <td id="time"></td>
+            <td id="nodes"></td>
+            <td id="knps"></td>
+          <tr>
+        </tbody>
+      </table>
+      <hr>
+      
+      <!-- PGN output -->
+      <div class="mt-2"><strong>PGN:</strong></div>
+      <div id="pgn"></div>
+      
+      <!-- download button -->
+      <button id="download_button" class="btn btn-success mt-2">Download</button>
+      
+      <!-- download link -->
+      <a id="download_link" href="" download="" hidden>your pgn</a>
     </div>
   </div>
 
@@ -296,15 +289,6 @@
     max_legal_moves();
   });
   
-  // handle make move button click
-  $('#make_move').on('click', function() {
-    // hide remained recommend_choices from before
-    $('#recommend_choices').hide()
-
-    // make computer move
-    make_move();
-  });
-  
   // handle take back button click
   $('#take_back').on('click', function() {
     // hide remained recommend_choices from before
@@ -448,6 +432,9 @@
         (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
+
+    // hide recommended choices
+    $('#recommend_choices').hide()
   }
 
   // on dropping piece
