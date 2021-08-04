@@ -10,6 +10,9 @@
 	<!-- favicon -->
 	<link rel="shortcut icon" href="/static/favicon.ico">
 
+	<!-- style.css -->
+	<link rel="stylesheet" href="/static/css/style.css">
+
 	<!-- JQuery -->
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	
@@ -20,59 +23,80 @@
 
 	<!-- Bluma -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+
+	<!--socket.io-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 	
 	{% endblock %}
 </head>
 
 <body>
-<section class="hero is-fullheight" style="background-color:#C4FCEF;">
+<section>
+	<div class="container-fluid has-text-centered">
+		<header id="top">
+			<nav class="navbar navbar-expand">
+				<ul class="navbar-nav">
+					<a href="{{ url_for('main.index') }}" class="navbar-item">
+						Home
+					</a>
+					{% if current_user.is_authenticated %}
+					<a href="{{ url_for('main.profile') }}" class="navbar-item">
+						Profile
+					</a>
+					{% endif %}
+					{% if not current_user.is_authenticated %}
+					<a href="{{ url_for('auth.login') }}" class="navbar-item">
+						Login
+					</a>
+					<a href="{{ url_for('auth.signup') }}" class="navbar-item">
+						Sign Up
+					</a>
+					{% endif %}
+					{% if current_user.is_authenticated %}
+					<a href="{{ url_for('auth.logout') }}" class="navbar-item">
+						Logout
+					</a>
+					{% endif %}
+				</ul>
 
-	<div class="hero-head">
-			<nav class="navbar">
-					<div class="container">
-
-							<div id="navbarMenuHeroA" class="navbar-menu">
-									<div class="navbar-end">
-											<a href="{{ url_for('main.index') }}" class="navbar-item">
-													Home
-											</a>
-											{% if current_user.is_authenticated %}
-											<a href="{{ url_for('main.profile') }}" class="navbar-item">
-													Profile
-											</a>
-											{% endif %}
-											{% if not current_user.is_authenticated %}
-											<a href="{{ url_for('auth.login') }}" class="navbar-item">
-													Login
-											</a>
-											<a href="{{ url_for('auth.signup') }}" class="navbar-item">
-													Sign Up
-											</a>
-											{% endif %}
-											{% if current_user.is_authenticated %}
-											<a href="{{ url_for('auth.logout') }}" class="navbar-item">
-													Logout
-											</a>
-											{% endif %}
-									</div>
-							</div>
+				<!-- online status -->
+				<div class="onlineStatus float-right">
+					<div class='icon-container'>
+						<img src="/static/pawn.svg" />
+						<div class='status-circle'>
+						</div>
 					</div>
-			</nav>
-	</div>
+					<script>
+						// Detect offline/online mode
+						window.addEventListener('online',  updateOnlineStatus);
+						window.addEventListener('offline', updateOnlineStatus);
+						function updateOnlineStatus(event) {
+							var condition = navigator.onLine ? "online" : "offline";
+							document.body.className = condition;
+							if (navigator.onLine) {
+								console.log("you are connected");
+								$(".status-circle").css("background-color", "green");
+							} else {
+								console.log("you are NOT connected");
+							}
+						}
+					</script>
+				</div>
 
-	<div class="hero-body">
-			<div class="container has-text-centered">
-					{% block content %}{% endblock %}
-			</div>
+			</nav>
+		</header>
+				{% block content %}{% endblock %}
 	</div>
 </section>
 
 	<div id="footer" class="card-footer">
 		{% block footer %}
-			<!-- TODO: edit footer -->
 				<!-- links -->
 				<div class="input-group mt-2 mb-3">
-					<a href="https://github.com/98arYan13/CrowdChess" class="mx-auto ml-2">CrowdChess (WoC) source code</a>
+					<a href="https://github.com/98arYan13/CrowdChess" class="mx-auto ml-2" style="font-size: small;">CrowdChess (WoC) source code</a>
+					<a href="mailto:wocChess@gmail.com" class="text-dark nav-link mx-auto">
+						<strong class="ml-2 mt-1">wocChess@gmail.com</strong>
+					</a>
 					<a href="mailto:ikoiran@gmail.com" class="text-dark nav-link mx-auto">
 						<strong class="ml-2 mt-1">ikoiran@gmail.com</strong>
 					</a>
