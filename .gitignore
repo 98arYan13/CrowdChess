@@ -2,7 +2,6 @@ test.py
 __pycache__/
 .gitignore
 test.ipynb
-analysisBoard.min.js
 db.sqlite
 archived_files/
 config.py
