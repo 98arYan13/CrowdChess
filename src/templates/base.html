@@ -23,9 +23,6 @@
 
 	<!-- Bluma -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
-
-	<!--socket.io-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 	
 	{% endblock %}
 </head>
@@ -66,21 +63,6 @@
 						<div class='status-circle'>
 						</div>
 					</div>
-					<script>
-						// Detect offline/online mode
-						window.addEventListener('online',  updateOnlineStatus);
-						window.addEventListener('offline', updateOnlineStatus);
-						function updateOnlineStatus(event) {
-							var condition = navigator.onLine ? "online" : "offline";
-							document.body.className = condition;
-							if (navigator.onLine) {
-								console.log("you are connected");
-								$(".status-circle").css("background-color", "green");
-							} else {
-								console.log("you are NOT connected");
-							}
-						}
-					</script>
 				</div>
 
 			</nav>

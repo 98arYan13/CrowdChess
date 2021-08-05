@@ -13,6 +13,26 @@
   <!-- draw-arrows-js -->
   <script src="/static/js/draw-arrows.js"></script>
 
+  <!--socket.io-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+	<script type="text/javascript" charset="utf-8">
+		var socket;
+    $(document).ready(function(){
+      socket = io.connect('http://' + document.domain + ':' + location.port + '/users');
+      socket.on('connect', () => {
+        // set connection status color to "green" for user if visiting users.html and connected to server 
+        $(".status-circle").css("background-color", "#7CFC00");
+        socket.emit('my event', {});
+        console.log("connection status: " + socket.connected);
+      });
+      socket.on('disconnect', () => {
+        // set connection status color to "red" for user if disconnected from server 
+        $(".status-circle").css("background-color", "red");
+        console.log("connection status: " + socket.connected);
+      });
+    });
+	</script>
+
 {% endblock %}
 {% block content %}
   <div class="row">
