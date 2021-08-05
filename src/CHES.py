@@ -1,4 +1,4 @@
-# chess processes for CrowdChess (cc)
+# chess processes for CrowdChess (CHES)
 from flask import Flask, Response, redirect, url_for, \
     request, session, abort, render_template, jsonify
 from flask.blueprints import Blueprint
@@ -12,10 +12,10 @@ import json
 import config
 
 
-cc = Blueprint('cc', __name__)
+CHES = Blueprint('CHES', __name__)
 
 # Maximum legal moves for current playable color
-@cc.route('/max_legal_moves', methods=['POST'])
+@CHES.route('/max_legal_moves', methods=['POST'])
 def max_legal_moves():
     try:
         # TODO: better to use fen instead of pgn
@@ -29,7 +29,7 @@ def max_legal_moves():
         return {'max_legal_moves': '20'}
 
 # make move API
-@cc.route('/make_move', methods=['POST'])
+@CHES.route('/make_move', methods=['POST'])
 def make_move():
     # extract PGN string from HTTP POST request body
     pgn = request.form.get('pgn')
@@ -130,7 +130,7 @@ def make_move():
         }
 
 # Recommended moves
-@cc.route('/recommend_moves', methods=['POST'])
+@CHES.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
     # set number of multipv lines for recommended moves
     MULTIPV = 3

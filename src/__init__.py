@@ -41,9 +41,9 @@ def create_app(debug=False):
     from main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
-    # blueprint for chess processes CrowdChess (cc)
-    from cc import cc as cc_blueprint
-    app.register_blueprint(cc_blueprint)
+    # blueprint for chess processes CrowdChess (CHES)
+    from CHES import CHES as CHES_blueprint
+    app.register_blueprint(CHES_blueprint)
 
     socketio.init_app(app)
 
