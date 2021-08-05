@@ -45,6 +45,10 @@ def create_app(debug=False):
     from CHES import CHES as CHES_blueprint
     app.register_blueprint(CHES_blueprint)
 
+    # blueprint for aggregator for CrowdChess project (aggregator)
+    from aggregator import aggregator as aggregator_blueprint
+    app.register_blueprint(aggregator_blueprint)
+
     socketio.init_app(app)
 
     return app
