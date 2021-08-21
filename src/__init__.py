@@ -10,7 +10,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 # socketio
-socketio = SocketIO()
+socketio = SocketIO(engineio_logger=True, logger=True)
 
 def create_app(debug=False):
     # Construct the core app object
