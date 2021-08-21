@@ -1,7 +1,15 @@
 {% extends "base.html" %}
+{% block title %}Welcome, {{name}}!{% endblock %}
+{% block head %}
+  {{ super() }}
+  
+  <!--socket.io-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
+{% endblock %}
 {% block content %}
-<h1 class="title">
-    Welcome, {{name}}!
-</h1>
+  <h1>users page loaded</h1><br>
+  <input type='text' id="message">
+  <button id="send">Send</button>
 {% endblock %}
