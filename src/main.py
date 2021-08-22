@@ -19,7 +19,7 @@ def profile():
     return render_template('profile.html', name=current_user.name)
 
 
-# Using Flask-Login with Flask-SocketIO
+"""# Using Flask-Login with Flask-SocketIO
 def authenticated_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -42,18 +42,11 @@ def receive_message_from_user(message):
     print('USER MESSAGE: {}'.format(message))
     emit('from flask', message.upper(), broadcast=True)
 
-@socketio.on('connect')
-def on_connect():
-    print('xxxxxxxxxxxxxxx')
-
-@socketio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected', request.sid)
 
 @socketio.on('message')
 def receive_message(message):
     print('########: {}'.format(message))
-    send('This is a message from Flask.')
+    send('This is a message from Flask.')"""
 
 
 app = create_app(debug=True) # initialize flask app using the __init__.py function
