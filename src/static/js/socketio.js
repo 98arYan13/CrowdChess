@@ -1,31 +1,18 @@
 $(document).ready(function(){
     var socket = io.connect('http://' + document.domain + ':' + location.port);
     var socket_messages = io('http://' + document.domain + ':' + location.port + '/messages')
-    var socket_users = io('http://' + document.domain + ':' + location.port + '/users') // users connected
-    $('#send').on('click', function() {
-        var message = $('#message').val();
-        socket_messages.emit('message from user', message)
-    })
-    
-    socket_messages.on('from flask', function(msg) {
-        alert(msg);
-    });
-    socket_messages.on('message', function(msg) {
-        alert(msg);
+
+    // online status, show entire webpage
+    /*socket.on('connect', () => {
+        $(".status-circle").css("background-color", "grey");
+    });*/
+    socket.on('connected users', function(msg) {
+        $("#total_online_users").text(msg.users_count)
+        console.log('online users: ' + parseInt(msg.users_count))
     });
 
-    socket.on('connect', () => {
-        socket.send('I am now connected');
-        socket.emit('my event', {data: 'I\'m connected!'})
+    // currently present users on homepage (main page)
+    socket_users.on('on_main_page_users', function(msg) {
+        console.log('visiting main page users: ' + parseInt(msg.users_count))
     });
-    socket.on('my response', (data) => {
-        socket.log(data)
-        socket.log('xxx')
-    });
-    socket.on('server originated', function(msg) {
-        alert(msg)
-    })
-    socket_users.on('online users', function(msg) {
-        console.log(parseInt(msg.users_count))
-    })
 });

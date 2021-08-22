@@ -23,6 +23,10 @@
 
 	<!-- Bluma -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+
+	<!--socket.io-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js"></script>
+	<script src="{{ url_for('static', filename='js/socketio.js') }}"></script>
 	
 	{% endblock %}
 </head>
@@ -32,7 +36,18 @@
 	<div class="container-fluid has-text-centered">
 		<header id="top">
 			<nav class="navbar navbar-expand">
+
+				<!-- online status -->
+				<div class="onlineStatus float-right">
+					<div class='icon-container'>
+						<img src="/static/pawn.svg" />
+						<div class='status-circle'>
+						</div>
+					</div>
+				</div>
+
 				<ul class="navbar-nav">
+					
 					<a href="{{ url_for('main.index') }}" class="navbar-item">
 						Home
 					</a>
@@ -56,18 +71,9 @@
 					{% endif %}
 				</ul>
 
-				<!-- online status -->
-				<div class="onlineStatus float-right">
-					<div class='icon-container'>
-						<img src="/static/pawn.svg" />
-						<div class='status-circle'>
-						</div>
-					</div>
-				</div>
-
 				<!-- connected users -->
-				<div style="font-size:3vw" class="ml-2">online users<br>
-					<b id="total_online_users">0</b>
+				<div style="font: size 8px;" class="ml-2">online users<br>
+					<b id="total_online_users">n/a</b>
 				</div>
 
 			</nav>

@@ -13,10 +13,6 @@
   <!-- draw-arrows-js -->
   <script src="/static/js/draw-arrows.js"></script>
 
-  <!--socket.io-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js"></script>
-  <script src="{{ url_for('static', filename='js/socketio.js') }}"></script>
-
 {% endblock %}
 {% block content %}
   <div class="row">
@@ -123,13 +119,14 @@
   </div>
 
 <script>
-  // online status
+  // online status of home page
   var socket_users = io('http://' + document.domain + ':' + location.port + '/users') // users connected
   socket_users.on('connect', () => {
-    $(".status-circle").css("background-color", "#90EE90");
+    $(".status-circle").css("background-color", "#90EE90"); // light green
   });
   socket_users.on('disconnect', () => {
-    $(".status-circle").css("background-color", "red");
+    $("#total_online_users").text('n/a')
+    $(".status-circle").css("background-color", "grey");
   });
 
   // hide recommended choices by computer to users by default
