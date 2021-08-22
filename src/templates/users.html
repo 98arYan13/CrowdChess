@@ -123,6 +123,15 @@
   </div>
 
 <script>
+  // online status
+  var socket_users = io('http://' + document.domain + ':' + location.port + '/users') // users connected
+  socket_users.on('connect', () => {
+    $(".status-circle").css("background-color", "#90EE90");
+  });
+  socket_users.on('disconnect', () => {
+    $(".status-circle").css("background-color", "red");
+  });
+
   // hide recommended choices by computer to users by default
   $('#recommend_choices').hide()
 
