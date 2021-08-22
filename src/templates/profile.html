@@ -9,5 +9,8 @@
 
 {% endblock %}
 {% block content %}
-  <h1>Welcome {{ name }}</h1><br>
+  <h1>Welcome {{ name }}</h1><br><br>
+  <a href="{{ url_for('main.index') }}">
+  <button type="button" class="btn-lg btn-primary btn-block">Go to Main Page (Home)</button>
+  </a>
 {% endblock %}
