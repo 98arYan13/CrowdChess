@@ -1,14 +1,11 @@
 # chess processes for CrowdChess (CHES)
-from flask import Flask, Response, redirect, url_for, \
-    request, session, abort, render_template, jsonify
+from flask import request
 from flask.blueprints import Blueprint
 import chess
 import chess.engine
 import chess.pgn
 import io
 import random
-from datetime import datetime
-import json
 import config
 
 

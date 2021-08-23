@@ -3,14 +3,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import config
-from flask_socketio import SocketIO, Namespace, emit
+from flask_socketio import SocketIO
 
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 
 # socketio
-socketio = SocketIO(engineio_logger=True, logger=True)
+socketio = SocketIO(engineio_logger=config.engineio_logger, logger=config.logger)
 
 def create_app(debug=False):
     # Construct the core app object
