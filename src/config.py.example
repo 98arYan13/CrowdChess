@@ -1,8 +1,17 @@
 # this is for admin login
 # change secret_key & password
+import os
+
 
 USERNAME = 'user'
 PASS = 'password'
-SECRET_KEY = "top secret" # TODO: use this command: py -c 'import os; print(os.urandom(16))'
+SECRET_KEY = "top secret"
 
 DEBUG = False
+
+# default move_time (seconds)
+move_time = '1'
+
+# loggers
+engineio_logger = False
+logger = False
