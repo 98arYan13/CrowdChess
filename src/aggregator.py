@@ -57,6 +57,7 @@ def aggregation(moves_list):
         emit('user_move', fen, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
         computer_move = make_move()
+        update_pgn_file(computer_move['best_move'])
         emit('computer_move', computer_move, broadcast=True) # force client to move "computer_move"
     else:
         flash('Consenus NOT reached, please choose between recommended choices')
