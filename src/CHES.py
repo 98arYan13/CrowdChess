@@ -17,7 +17,7 @@ FEN = config.FEN
 
 # create a new PGN file
 pgn_file_name = config.pgn_file_name
-with open('./data/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
+with open('./datas/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
     game = chess.pgn.Game()
     if FEN:
         game.setup(FEN)
@@ -26,16 +26,16 @@ with open('./data/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
 
 # update pgn file with given legall san
 def update_pgn_file(SAN):
-    with open('./data/' + pgn_file_name, 'r') as pgn:
+    with open('./datas/' + pgn_file_name, 'r') as pgn:
         game = chess.pgn.read_game(pgn)
-    with open('./data/' + pgn_file_name, 'w') as pgn:
+    with open('./datas/' + pgn_file_name, 'w') as pgn:
         game.end().add_variation(chess.Move.from_uci(SAN))
         exporter = chess.pgn.FileExporter(pgn)
         game.accept(exporter)
 
 # FEN of current game
 def get_fen():
-    with open('./data/' + pgn_file_name, 'r') as pgn:
+    with open('./datas/' + pgn_file_name, 'r') as pgn:
         game = chess.pgn.read_game(pgn)
     board = game.board()
     return board.fen()
@@ -58,7 +58,7 @@ def max_legal_moves():
 # make move from aggregator
 def make_move():
     # open pgn file
-    with open('./data/' + pgn_file_name, 'r') as pgn:
+    with open('./datas/' + pgn_file_name, 'r') as pgn:
         # read game from PGN
         game = chess.pgn.read_game(pgn)
 
