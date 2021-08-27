@@ -5,11 +5,41 @@ import chess
 import chess.engine
 import chess.pgn
 import io
+import time
 import random
 import config
 
 
 CHES = Blueprint('CHES', __name__)
+
+# FEN for start game
+FEN = config.FEN
+
+# create a new PGN file
+pgn_file_name = config.pgn_file_name
+with open('./data/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
+    game = chess.pgn.Game()
+    if FEN:
+        game.setup(FEN)
+    exporter = chess.pgn.FileExporter(pgn)
+    game.end().accept(exporter)
+
+# update pgn file with given legall san
+def update_pgn_file(SAN):
+    with open('./data/' + pgn_file_name, 'r') as pgn:
+        game = chess.pgn.read_game(pgn)
+    with open('./data/' + pgn_file_name, 'w') as pgn:
+        game.end().add_variation(game.end().board().push_san(SAN))
+        exporter = chess.pgn.FileExporter(pgn)
+        game.accept(exporter)
+
+# FEN of current game
+def get_fen():
+    with open('./data/' + pgn_file_name, 'r') as pgn:
+        game = chess.pgn.read_game(pgn)
+    board = game.board()
+    return board.fen()
+
 
 # Maximum legal moves for current playable color
 @CHES.route('/max_legal_moves', methods=['POST'])
@@ -25,29 +55,16 @@ def max_legal_moves():
     except: # if new game
         return {'max_legal_moves': '20'}
 
-# make move API
-@CHES.route('/make_move', methods=['POST'])
+# make move from aggregator
 def make_move():
-    # extract PGN string from HTTP POST request body
-    pgn = request.form.get('pgn')
-    
-    try:
-        # read game moves from PGN
-        game = chess.pgn.read_game(io.StringIO(pgn))
+    # open pgn file
+    with open('./data/' + pgn_file_name, 'r') as pgn:
+        # read game from PGN
+        game = chess.pgn.read_game(pgn)
 
-        # init board
-        board = game.board()
+    # board based on last game
+    board = game.end().board()
 
-        # loop over moves in game
-        for move in game.mainline_moves():
-            # make move on chess board
-            board.push(move)
-    
-    except:
-        # extract fen string from HTTP POST request body
-        fen = request.form.get('fen')
-        board = chess.Board(fen)
-        
     # create chess engine instance
     engine = chess.engine.SimpleEngine.popen_uci(
         './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
