@@ -128,6 +128,14 @@
     $("#total_online_users").text('n/a')
     $(".status-circle").css("background-color", "grey");
   });
+  // currently present users on homepage (main page)
+  socket_users.on('on_main_page_users', function(msg) {
+      console.log('visiting main page users: ' + parseInt(msg.users_count))
+  });
+  // show recommend choices
+  socket_users.on('recommend_choice', (data) => {
+    recommend_moves(data);
+  });
 
   // hide recommended choices by computer to users by default
   $('#recommend_choices').hide()
@@ -142,7 +150,7 @@
   }
   
   // recommended moves
-  function recommend_moves() {
+  function recommend_moves(data) {
     // disable take back button
     $('#take_back').attr('disabled', true);
 
@@ -152,134 +160,118 @@
     // hide remained recommend_choices from before
     $('#recommend_choices').hide()
 
-    $.post('/recommend_moves',{
-        'pgn': game.pgn(),
-        'fen': game.fen(),
-        'fixed_depth': $('#fixed_depth option:selected').val(),
-        'move_time': $('#move_time option:selected').val() 
-      }, function(data) {
+    for (let i = 1; i <= data.pv_array.length; i++) {
+      // pv of every multipv line
+      let pvArr = data.pv_array[i-1].split(" ");
+      // name of choice button
+      buttonName = pvArr[0]
+      var r = $('<button id="choice'+i+'" type="button" class="btn btn-primary">'+buttonName+'</button>')
+      $("#choices").append(r);
+      
+      // re-enable take back button
+      $('#take_back').attr('disabled', false);
+    }
 
-        for (let i = 1; i <= data.pv_array.length; i++) {
-          // pv of every multipv line
-          let pvArr = data.pv_array[i-1].split(" ");
-          // name of choice button
-          buttonName = pvArr[0]
-          var r = $('<button id="choice'+i+'" type="button" class="btn btn-primary">'+buttonName+'</button>')
-          $("#choices").append(r);
-          
-          // re-enable take back button
-          $('#take_back').attr('disabled', false);
-        }
+    $('#recommend_choices').show();
 
-        $('#recommend_choices').show();
+    //draw arrow of recommended choice(s)
+    // TODO: must be dynamically change amount of these below functions based-on multipv lines (recommended moves number)
+    $('#choice1').on('click', function() {
+      $("#canvas").remove();
+      let pvArr = data.pv_array[0].split(" ");
+      uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
+      drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
+      oArrow = null
+      if(pvArr.length >= 2) {
+        oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
+        drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
+      }
+    });
+    $('#choice2').on('click', function() {
+      $("#canvas").remove();
+      let pvArr = data.pv_array[1].split(" ");
+      uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
+      drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
+      oArrow = null
+      if(pvArr.length >= 2) {
+        oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
+        drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
+      }
+    });
+    $('#choice3').on('click', function() {
+      $("#canvas").remove();
+      let pvArr = data.pv_array[2].split(" ");
+      uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
+      drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
+      oArrow = null
+      if(pvArr.length >= 2) {
+        oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
+        drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
+      }
+    });
 
-        //draw arrow of recommended choice(s)
-        // TODO: must be dynamically change amount of these below functions based-on multipv lines (recommended moves number)
-        $('#choice1').on('click', function() {
-          $("#canvas").remove();
-          let pvArr = data.pv_array[0].split(" ");
-          uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
-          drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
-          oArrow = null
-          if(pvArr.length >= 2) {
-            oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
-            drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
-          }
-        });
-        $('#choice2').on('click', function() {
-          $("#canvas").remove();
-          let pvArr = data.pv_array[1].split(" ");
-          uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
-          drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
-          oArrow = null
-          if(pvArr.length >= 2) {
-            oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
-            drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
-          }
-        });
-        $('#choice3').on('click', function() {
-          $("#canvas").remove();
-          let pvArr = data.pv_array[2].split(" ");
-          uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
-          drawArrow(uArrow, "#0000FF"); //user's arrow (recommend arrow to user)
-          oArrow = null
-          if(pvArr.length >= 2) {
-            oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
-            drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
-          }
-        });
+    // confirm choice and move
+    $("#confirm_choice").on('click', function() {
+      // load fen into the current board state
+      game.move(uArrow, { sloppy: true })
+      // update board position
+      board.position(game.fen());
+      // update game status
+      updateStatus();
 
-        // confirm choice and move
-        $("#confirm_choice").on('click', function() {
+      // if oArrow exists then move that, else call make_move
+      if(oArrow) {
+        // executed after 200 miliseconds
+        setTimeout(function() {
           // load fen into the current board state
-          game.move(uArrow, { sloppy: true })
+          game.move(oArrow, { sloppy: true })
           // update board position
           board.position(game.fen());
           // update game status
           updateStatus();
+        }, 200);
+      }
+      else {
+        make_move();
+      };
+      
+      max_legal_moves();
 
-          // if oArrow exists then move that, else call make_move
-          if(oArrow) {
-            // executed after 200 miliseconds
-            setTimeout(function() {
-              // load fen into the current board state
-              game.move(oArrow, { sloppy: true })
-              // update board position
-              board.position(game.fen());
-              // update game status
-              updateStatus();
-            }, 200);
-          }
-          else {
-            make_move();
-          };
-          
-          max_legal_moves();
+      // remove canvas
+      $('#canvas').remove();
+      // remove previous choices button
+      $('#choices').empty();
+      // hide recommended choices by computer to users
+      $('#recommend_choices').hide()
+    });
 
-          // remove canvas
-          $('#canvas').remove();
-          // remove previous choices button
-          $('#choices').empty();
-          // hide recommended choices by computer to users
-          $('#recommend_choices').hide()
-        });
-
-      });
   }
 
   // make computer move
-  function make_move() {
+  function make_move(data) {
     // disable take back button
     $('#take_back').attr('disabled', true);
 
-    // make HTTP POST request to make move API
-    $.post('/make_move',{
-        'pgn': game.pgn(),
-        'fen': game.fen(),
-        'fixed_depth': $('#fixed_depth option:selected').val(),
-        'move_time': $('#move_time option:selected').val() 
-      }, function(data) {
-        // load fen into the current board state
-        game.move(data.best_move, { sloppy: true })
+    // load fen into the current board state
+    game.move(data.best_move, { sloppy: true })
 
-        // update board position
-        board.position(game.fen());
+    // update board position
+    board.position(game.fen());
 
-        // update game info
-        $score.text(data.score);
-        $depth.text(data.depth);
-        $time.text(data.time);
-        $nodes.text(data.nodes);
-        $knps.text(Math.round(Number($nodes.text()) / parseFloat($time.text())) / 1000)
+    // update game info
+    $score.text(data.score);
+    $depth.text(data.depth);
+    $time.text(data.time);
+    $nodes.text(data.nodes);
+    $knps.text(Math.round(Number($nodes.text()) / parseFloat($time.text())) / 1000)
 
-        // update game status
-        updateStatus();
-        
-        max_legal_moves();
+    // update game status
+    updateStatus();
+    
+    max_legal_moves();
 
-        // re-enable take back button
-        $('#take_back').attr('disabled', false);
-    });
+    // re-enable take back button
+    $('#take_back').attr('disabled', false);
   }
 
   // handle new game button click
@@ -459,12 +451,32 @@
     // illegal move
     if (move === null) return 'snapback'
 
-    // make computer move
-    make_move();
+    // send move to aggregator
+    socket_users.emit('move_from_user', move);
 
+  }
+
+  // recieve consensus_move from aggregator
+  socket_users.on('user_move', (fen) => {
+    // update board position
+    board.position(fen);
     // update game status
     updateStatus();
-  }
+  });
+  // recieve computer_move from aggregator
+  socket_users.on('computer_move', (computer_move) => {
+    // make computer move
+    make_move(computer_move);
+    // update game status
+    updateStatus();
+  });
+  // if consensus not reached, user must choose from recommend_choice
+  socket_users.on('recommend_choice', (data) => {
+    game.undo();
+    recommend_moves(data);
+    // update game status
+    updateStatus();
+  });
 
   // highlight legal moves
   function onMouseoverSquare (square, piece) {
