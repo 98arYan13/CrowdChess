@@ -3,15 +3,26 @@
 import os
 
 
-USERNAME = 'user'
+USERNAME = 'admin'
 PASS = 'password'
 SECRET_KEY = "top secret"
 
 DEBUG = False
 
-# default move_time (seconds)
-move_time = '1'
-
 # loggers
 engineio_logger = False
 logger = False
+
+# default move_time (seconds)
+move_time = '1'
+
+# set number of multipv lines for recommended moves
+MULTIPV = 3
+
+# initial FEN
+FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+aggregation_method = "Mojority_vote"
+
+#pgn_file_name = config.aggregation_method + '-' + time.strftime("%Y_%m_%d-%H_%M") + '.pgn'
+pgn_file_name = 'test.pgn'

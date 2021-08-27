@@ -129,8 +129,8 @@ def make_move():
 # Recommended moves
 @CHES.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
-    # set number of multipv lines for recommended moves
-    MULTIPV = 3
+    # number of multipv lines for recommended moves
+    MULTIPV = config.MULTIPV
 
     # extract PGN string from HTTP POST request body
     pgn = request.form.get('pgn')
