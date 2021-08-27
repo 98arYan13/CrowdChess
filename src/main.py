@@ -2,7 +2,7 @@ import functools
 from flask import Blueprint, render_template, flash
 from flask_login import login_required, current_user
 from flask_socketio import disconnect, emit, send
-from __init__ import create_app, db, socketio
+from __init__ import create_app, socketio
 
 
 # main blueprint
@@ -19,7 +19,9 @@ def profile():
     return render_template('profile.html', name=current_user.name)
 
 
-"""# Using Flask-Login with Flask-SocketIO
+online_users = set() # currently connected users to server
+
+# Using Flask-Login with Flask-SocketIO
 def authenticated_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -28,6 +30,25 @@ def authenticated_only(f):
         else:
             return f(*args, **kwargs)
     return wrapped
+
+@socketio.on('connect')
+@authenticated_only
+def on_connect(auth):
+    online_users.add(current_user.email)
+    users_count = len(online_users)
+    emit('connected users', {'users_count' : users_count}, broadcast=True)
+    print('\n', current_user.name, current_user.email, ' connected\n')
+
+@socketio.on('disconnect')
+@authenticated_only
+def test_disconnect():
+    online_users.remove(current_user.email)
+    users_count = len(online_users)
+    emit('connected users', {'users_count' : users_count}, broadcast=True)
+    print('Client disconnected: ', current_user.name)
+
+
+"""
 
 @socketio.on('my event')
 @authenticated_only
