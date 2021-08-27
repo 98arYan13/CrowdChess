@@ -54,18 +54,21 @@ def aggregation(moves_list):
         # update pgn file with given legall san
         update_pgn_file(consensus_move)
         fen = get_fen() # FEN of current game
-        emit('user_move', fen) # force client to move "consensus_move"
+        emit('user_move', fen, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
         computer_move = make_move()
-        emit('computer_move', computer_move) # force client to move "computer_move"
+        emit('computer_move', computer_move, broadcast=True) # force client to move "computer_move"
     else:
         flash('Consenus NOT reached, please choose between recommended choices')
-        emit('recommend_choice', recommend_moves())
-    moves_list = [] # emptying moves list for next aggregation
+        emit('recommend_choice', recommend_moves(), broadcast=True)
 
 @socketio.on("move_from_user", namespace='/users')
 def move_from_user(move):
     print("\nmove form user: ", move, '\n')
-    moves_list.append(move['san'])
+    global moves_list
+    moves_list.append(move['from'] + move['to'])
+    print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
+    print('active_users length: ', len(active_users))
     if len(moves_list) == len(active_users): # call aggregation if all users do thier move
         aggregation(moves_list)
+        moves_list = [] # emptying moves list for next aggregation
