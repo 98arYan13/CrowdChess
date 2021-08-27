@@ -29,7 +29,7 @@ def update_pgn_file(SAN):
     with open('./data/' + pgn_file_name, 'r') as pgn:
         game = chess.pgn.read_game(pgn)
     with open('./data/' + pgn_file_name, 'w') as pgn:
-        game.end().add_variation(game.end().board().push_san(SAN))
+        game.end().add_variation(chess.Move.from_uci(SAN))
         exporter = chess.pgn.FileExporter(pgn)
         game.accept(exporter)
 
