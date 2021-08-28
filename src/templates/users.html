@@ -125,7 +125,7 @@
     $(".status-circle").css("background-color", "#90EE90"); // light green
   });
   socket_users.on('disconnect', () => {
-    $("#total_online_users").text('n/a')
+    $("#total_online_users").text('n/a');
     $(".status-circle").css("background-color", "grey");
   });
   // currently present users on homepage (main page)
@@ -136,12 +136,17 @@
   // initialize client fen every time client load main page
   socket_users.on("initialize_client_fen", function(data) {
     // load fen to chess (game)
-    game.load(data.fen)
+    game.load(data.fen);
     // update board position
     board.position(data.fen);
     // update game status
     updateStatus();
-  })
+  });
+
+  socket_users.on('consensus_not_reached', function(msg) {
+    $('#collapseAlert').collapse('show');
+    $('#alertMessage').text(msg);
+  });
 
   // show recommend choices
   socket_users.on('recommend_choice', (data) => {

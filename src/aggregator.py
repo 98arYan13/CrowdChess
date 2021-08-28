@@ -67,8 +67,8 @@ def aggregation(moves_list):
         fen = get_fen() # FEN of current game
         emit('computer_move', computer_move, broadcast=True) # force client to move "computer_move"
     else:
-        flash('Consenus NOT reached, please choose between recommended choices')
-        emit('recommend_choice', recommend_moves(), broadcast=True)
+        emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
+        #emit('recommend_choice', recommend_moves(), broadcast=True)
 
 @socketio.on("move_from_user", namespace='/users')
 def move_from_user(move):
