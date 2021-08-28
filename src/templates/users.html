@@ -143,6 +143,7 @@
     updateStatus();
   });
 
+  // alert message recieved from server
   socket_users.on('consensus_not_reached', function(msg) {
     $('#collapseAlert').collapse('show');
     $('#alertMessage').text(msg);
