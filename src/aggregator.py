@@ -23,16 +23,21 @@ def act_users(method, active_users):
 def on_connect(auth):
     users_count = len(act_users('add', active_users))
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
+    emit('initialize_client_fen', {'fen' : fen})
 
 @socketio.on('disconnect', namespace='/users')
 def test_disconnect():
     users_count = len(act_users('remove', active_users))
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
-    print('\nuser leaved the main page\n')
+    print(f'\nuser {current_user.name} leaved the main page\n')
 
 
 # empty moves list
 moves_list = []
+
+# fen
+fen = get_fen()
+
 # Majority vote:
 def aggregation(moves_list):
     """
@@ -53,11 +58,13 @@ def aggregation(moves_list):
     if consensus:
         # update pgn file with given legall san
         update_pgn_file(consensus_move)
+        global fen
         fen = get_fen() # FEN of current game
         emit('user_move', fen, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
         computer_move = make_move()
         update_pgn_file(computer_move['best_move'])
+        fen = get_fen() # FEN of current game
         emit('computer_move', computer_move, broadcast=True) # force client to move "computer_move"
     else:
         flash('Consenus NOT reached, please choose between recommended choices')
@@ -65,7 +72,7 @@ def aggregation(moves_list):
 
 @socketio.on("move_from_user", namespace='/users')
 def move_from_user(move):
-    print("\nmove form user: ", move, '\n')
+    print(f"\nmove form user {current_user.name}:", move, '\n')
     global moves_list
     moves_list.append(move['from'] + move['to'])
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))

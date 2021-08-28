@@ -37,8 +37,10 @@ def update_pgn_file(SAN):
 def get_fen():
     with open('./datas/' + pgn_file_name, 'r') as pgn:
         game = chess.pgn.read_game(pgn)
-    board = game.board()
-    return board.fen()
+    board = game.end().board()
+    fen = board.fen()
+    print('\nnew fen:', fen, '\n')
+    return fen
 
 
 # Maximum legal moves for current playable color
