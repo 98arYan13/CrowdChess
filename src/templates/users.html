@@ -28,6 +28,7 @@
         <!-- game status -->
         <strong class="mx-auto"><div id="status"></div></strong>
         <hr>
+        <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
 
         <!-- -buttons -->
         <div class="btn-group">
@@ -40,7 +41,6 @@
 
         <!-- choose computer recommend move -->
         <div id="recommend_choices" class="row mx-auto mt-2 mb-2" style="width: 400px;">
-          <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
           <div id="choices" class="btn-group ml-2">
           </div>
         </div>
@@ -228,7 +228,7 @@
     });
 
     // confirm choice and move
-    $("#confirm_choice").on('click', function() {
+    $("#confirm_choice").off().on('click', function() { // off() is for prevent triggering twice this button
       // emit user's choice and corresponding computer move to server
       socket_users.emit('choice_from_user', {'uArrow':uArrow, 'oArrow':oArrow});
       // hide alert if exists
@@ -457,15 +457,19 @@
 
   // recieve consensus_move from aggregator
   socket_users.on('user_move', (fen) => {
+    // load fen to chess (game)
+    game.load(fen);
     // update board position
     board.position(fen);
     // update game status
     updateStatus();
   });
   // recieve computer_move from aggregator
-  socket_users.on('computer_move', (computer_move) => {
-    // make computer move
-    make_move(computer_move);
+  socket_users.on('computer_move', (fen) => {
+    // load fen to chess (game)
+    game.load(fen);
+    // update board position
+    board.position(fen);
     // update game status
     updateStatus();
   });
