@@ -90,6 +90,7 @@ def aggregation(moves_list):
         prevent_drag = False
         emit('preventDrag', prevent_drag, broadcast=True)
     else:
+        emit('update_clint_board', fen, broadcast=True) # force client to move "computer_move"
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
         emit('recommend_choice', recommend_moves(), broadcast=True)
 
