@@ -86,7 +86,7 @@ def aggregation(moves_list):
             update_pgn_file(computer_move)
         fen = get_fen() # FEN of current game
         print(fen)
-        emit('computer_move', computer_move, broadcast=True) # force client to move "computer_move"
+        emit('computer_move', fen, broadcast=True) # force client to move "computer_move"
     else:
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
         emit('recommend_choice', recommend_moves(), broadcast=True)
