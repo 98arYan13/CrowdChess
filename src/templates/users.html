@@ -133,12 +133,12 @@
     console.log('visiting main page users: ' + parseInt(data.users_count))
   });
 
-  // initialize client fen every time client load main page
-  socket_users.on("initialize_client_fen", function(data) {
+  // update client board and chess core
+  socket_users.on("update_clint_board", function(fen) {
     // load fen to chess (game)
-    game.load(data.fen);
+    game.load(fen);
     // update board position
-    board.position(data.fen);
+    board.position(fen);
     // update game status
     updateStatus();
   });
@@ -455,24 +455,6 @@
 
   }
 
-  // recieve consensus_move from aggregator
-  socket_users.on('user_move', (fen) => {
-    // load fen to chess (game)
-    game.load(fen);
-    // update board position
-    board.position(fen);
-    // update game status
-    updateStatus();
-  });
-  // recieve computer_move from aggregator
-  socket_users.on('computer_move', (fen) => {
-    // load fen to chess (game)
-    game.load(fen);
-    // update board position
-    board.position(fen);
-    // update game status
-    updateStatus();
-  });
   // if consensus not reached, user must choose from recommend_choice
   socket_users.on('recommend_choice', (data) => {
     recommend_moves(data);

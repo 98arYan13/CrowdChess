@@ -35,7 +35,7 @@ def authenticated_only(f):
 def on_connect(auth):
     users_count = len(act_users('add', active_users))
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
-    emit('initialize_client_fen', {'fen' : fen})
+    emit('update_clint_board', fen)
 
 @socketio.on('disconnect', namespace='/users')
 @login_required
@@ -77,7 +77,7 @@ def aggregation(moves_list):
         global fen
         fen = get_fen() # FEN of current game
         print(fen)
-        emit('user_move', fen, broadcast=True) # force client to move "consensus_move"
+        emit('update_clint_board', fen, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
         if computer_move == None:
             computer_move = make_move()
@@ -86,7 +86,7 @@ def aggregation(moves_list):
             update_pgn_file(computer_move)
         fen = get_fen() # FEN of current game
         print(fen)
-        emit('computer_move', fen, broadcast=True) # force client to move "computer_move"
+        emit('update_clint_board', fen, broadcast=True) # force client to move "computer_move"
     else:
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
         emit('recommend_choice', recommend_moves(), broadcast=True)
