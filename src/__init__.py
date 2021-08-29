@@ -18,7 +18,7 @@ def create_app(debug=False):
 
     # Application Configuration
     app.config.update(SECRET_KEY=config.SECRET_KEY)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' # it is the path where the SQLite database file will be saved
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///datas/db.sqlite' # it is the path where the SQLite database file will be saved
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # deactivate Flask-SQLAlchemy track modifications
     app.debug = debug
 
