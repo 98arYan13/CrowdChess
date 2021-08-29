@@ -161,6 +161,9 @@
     recommend_moves(data);
   });
 
+  // disable confirm_choice button
+  $("#confirm_choice").attr('disabled', true);
+
   // hide recommended choices by computer to users by default
   $('#recommend_choices').hide()
 
@@ -210,6 +213,8 @@
         oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
         drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
       }
+      // enable confirm_choice button
+      $("#confirm_choice").attr('disabled', false);
     });
     $('#choice2').on('click', function() {
       $("#canvas").remove();
@@ -221,6 +226,8 @@
         oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
         drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
       }
+      // enable confirm_choice button
+      $("#confirm_choice").attr('disabled', false);
     });
     $('#choice3').on('click', function() {
       $("#canvas").remove();
@@ -232,6 +239,8 @@
         oArrow = pvArr[1]; //for opponent (computer's) arrow (threat arrow)
         drawArrow(oArrow, "#ff0000"); //computer's arrow (threat arrow)
       }
+      // enable confirm_choice button
+      $("#confirm_choice").attr('disabled', false);
     });
 
     // confirm choice and move
@@ -239,6 +248,10 @@
       if(oArrow === null) { // because python gets None even var is not availible
         oArrow = 'xxxx'
       }
+      // enable confirm_choice button
+      $("#confirm_choice").attr('disabled', false);
+      // disable confirm_choice button
+      $("#confirm_choice").attr('disabled', true);
       // emit user's choice and corresponding computer move to server
       socket_users.emit('choice_from_user', {'uArrow':uArrow, 'oArrow':oArrow});
       // hide alert if exists
@@ -463,7 +476,12 @@
     // illegal move
     if (move === null) return 'snapback'
 
+    // enable confirm_choice button
+    $("#confirm_choice").attr('disabled', false);
+
     $("#confirm_choice").off().on('click', function() {
+      // disable confirm_choice button
+      $("#confirm_choice").attr('disabled', true);
       // send move to aggregator
       socket_users.emit('move_from_user', move);
       //globalThis.preventDrag = true;
