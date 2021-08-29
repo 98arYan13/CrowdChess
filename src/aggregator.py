@@ -61,6 +61,7 @@ def aggregation(moves_list):
     THIS USE MAJORITY VOTE METHOD !
     """
     consensus = False
+    computer_move = 'xxxx'
     if len(Counter(moves_list)) > 1: # if second most_common move exist (if different moves)
         if Counter(moves_list).most_common()[0][1] > Counter(moves_list).most_common()[1][1]: # if count of most frequent move is bigger than second most frequent (or actually all others)
             consensus_move = Counter(moves_list).most_common()[0][1] # if most frequent move is the Majority
@@ -76,16 +77,14 @@ def aggregation(moves_list):
         update_pgn_file(consensus_move)
         global fen
         fen = get_fen() # FEN of current game
-        print(fen)
         emit('update_clint_board', fen, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
-        if computer_move == None:
+        if computer_move == 'xxxx':
             computer_move = make_move()
             update_pgn_file(computer_move['best_move'])
         else:
             update_pgn_file(computer_move)
         fen = get_fen() # FEN of current game
-        print(fen)
         emit('update_clint_board', fen, broadcast=True) # force client to move "computer_move"
     else:
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)

@@ -229,6 +229,9 @@
 
     // confirm choice and move
     $("#confirm_choice").off().on('click', function() { // off() is for prevent triggering twice this button
+      if(oArrow === null) { // because python gets None even var is not availible
+        oArrow = 'xxxx'
+      }
       // emit user's choice and corresponding computer move to server
       socket_users.emit('choice_from_user', {'uArrow':uArrow, 'oArrow':oArrow});
       // hide alert if exists
