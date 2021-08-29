@@ -229,28 +229,10 @@
 
     // confirm choice and move
     $("#confirm_choice").on('click', function() {
-      // load fen into the current board state
-      game.move(uArrow, { sloppy: true })
-      // update board position
-      board.position(game.fen());
-      // update game status
-      updateStatus();
-
-      // if oArrow exists then move that, else call make_move
-      if(oArrow) {
-        // executed after 200 miliseconds
-        setTimeout(function() {
-          // load fen into the current board state
-          game.move(oArrow, { sloppy: true })
-          // update board position
-          board.position(game.fen());
-          // update game status
-          updateStatus();
-        }, 200);
-      }
-      else {
-        make_move();
-      };
+      // emit user's choice and corresponding computer move to server
+      socket_users.emit('choice_from_user', {'uArrow':uArrow, 'oArrow':oArrow});
+      // hide alert if exists
+      $('#collapseAlert').collapse('hide');
       
       max_legal_moves();
 
@@ -489,7 +471,6 @@
   });
   // if consensus not reached, user must choose from recommend_choice
   socket_users.on('recommend_choice', (data) => {
-    game.undo();
     recommend_moves(data);
     // update game status
     updateStatus();

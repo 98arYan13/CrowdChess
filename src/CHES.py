@@ -146,30 +146,18 @@ def make_move():
         }
 
 # Recommended moves
-@CHES.route('/recommend_moves', methods=['POST'])
+#@CHES.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
     # number of multipv lines for recommended moves
     MULTIPV = config.MULTIPV
 
-    # extract PGN string from HTTP POST request body
-    pgn = request.form.get('pgn')
-    
-    try:
-        # read game moves from PGN
-        game = chess.pgn.read_game(io.StringIO(pgn))
+    # open pgn file
+    with open('./datas/' + pgn_file_name, 'r') as pgn:
+        # read game from PGN
+        game = chess.pgn.read_game(pgn)
 
-        # init board
-        board = game.board()
-
-        # loop over moves in game
-        for move in game.mainline_moves():
-            # make move on chess board
-            board.push(move)
-    
-    except:
-        # extract fen string from HTTP POST request body
-        fen = request.form.get('fen')
-        board = chess.Board(fen)
+    # board based on last game
+    board = game.end().board()
         
     # create chess engine instance
     engine = chess.engine.SimpleEngine.popen_uci(
