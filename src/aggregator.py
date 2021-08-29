@@ -12,6 +12,10 @@ from CHES import recommend_moves, get_fen, make_move, update_pgn_file
 aggregator = Blueprint('aggregator', __name__)
 
 
+moves_list = [] # empty moves list
+fen = get_fen() # fen
+prevent_drag = False # prevent client board to drag move
+
 active_users = set() # users present on users.html page
 def act_users(method, active_users):
     if method == "add":
@@ -36,6 +40,8 @@ def on_connect(auth):
     users_count = len(act_users('add', active_users))
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
     emit('update_clint_board', fen)
+    print(prevent_drag)
+    emit('preventDrag', prevent_drag)
 
 @socketio.on('disconnect', namespace='/users')
 @login_required
@@ -44,12 +50,6 @@ def test_disconnect():
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
     print(f'\nuser {current_user.name} leaved the main page\n')
 
-
-# empty moves list
-moves_list = []
-
-# fen
-fen = get_fen()
 
 # Majority vote:
 def aggregation(moves_list):
@@ -62,6 +62,7 @@ def aggregation(moves_list):
     """
     consensus = False
     computer_move = 'xxxx'
+    global prevent_drag
     if len(Counter(moves_list)) > 1: # if second most_common move exist (if different moves)
         if Counter(moves_list).most_common()[0][1] > Counter(moves_list).most_common()[1][1]: # if count of most frequent move is bigger than second most frequent (or actually all others)
             consensus_move = Counter(moves_list).most_common()[0][1] # if most frequent move is the Majority
@@ -86,18 +87,25 @@ def aggregation(moves_list):
             update_pgn_file(computer_move)
         fen = get_fen() # FEN of current game
         emit('update_clint_board', fen, broadcast=True) # force client to move "computer_move"
+        prevent_drag = False
+        emit('preventDrag', prevent_drag, broadcast=True)
     else:
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
         emit('recommend_choice', recommend_moves(), broadcast=True)
 
+
 @socketio.on("move_from_user", namespace='/users')
 def move_from_user(move):
+    emit('preventDrag', True)
     print(f"\nmove form user {current_user.name}:", move, '\n')
     global moves_list
     moves_list.append(move['from'] + move['to'])
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     print('active_users length: ', len(active_users))
     if len(moves_list) == len(active_users): # call aggregation if all users do thier move
+        global prevent_drag
+        prevent_drag = True
+        emit('preventDrag', prevent_drag, broadcast=True)
         aggregation(moves_list)
         moves_list = [] # emptying moves list for next aggregation
 

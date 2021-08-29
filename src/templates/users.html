@@ -119,6 +119,7 @@
   </div>
 
 <script>
+
   // online status of home page
   var socket_users = io('http://' + document.domain + ':' + location.port + '/users') // users connected
   socket_users.on('connect', () => {
@@ -131,6 +132,12 @@
   // currently present users on homepage (main page)
   socket_users.on('on_main_page_users', function(data) {
     console.log('visiting main page users: ' + parseInt(data.users_count))
+  });
+
+  // prevent the board to drag pieces when server command it
+  var preventDrag = false
+  socket_users.on('preventDrag', function(prevent_drag){
+    globalThis.preventDrag = prevent_drag;
   });
 
   // update client board and chess core
@@ -434,6 +441,9 @@
       return false
     }
 
+    // prevent the board to drag pieces when server command it
+    if (preventDrag === true) return false
+
     // hide recommended choices
     $('#recommend_choices').hide()
   }
@@ -453,8 +463,11 @@
     // illegal move
     if (move === null) return 'snapback'
 
-    // send move to aggregator
-    socket_users.emit('move_from_user', move);
+    $("#confirm_choice").off().on('click', function() {
+      // send move to aggregator
+      socket_users.emit('move_from_user', move);
+      //globalThis.preventDrag = true;
+    });
 
   }
 
