@@ -134,7 +134,6 @@
     console.log('visiting main page users: ' + parseInt(data.users_count))
   });
 
-  var maxLegalMoves = null;
   // update board and chess core
   socket_users.on('update_client_interface', function(data){
     // load fen to chess (game)
@@ -143,6 +142,10 @@
     $gameTurn = game.turn();
     // update board position
     board.position(data.fen);
+    // highlight color's move
+    removeHighlights($gameTurn)
+    $board.find('.square-' + data.last_move_from).addClass('highlight-' + $gameTurn)
+    $board.find('.square-' + data.last_move_to).addClass('highlight-' + $gameTurn)
     // update game status
     updateStatus();
     // set max legal moves
@@ -410,6 +413,7 @@
 
   // GUI board & game state variables
   var board = null;
+  var $board = $('#chess_board');
   var game = new Chess();
   var $status = $('#status');
   var $fen = $('#fen');
@@ -421,6 +425,8 @@
   var $knps = $('#knps');
   var whiteSquareGrey = '#a9a9a9'
   var blackSquareGrey = '#696969'
+  var squareToHighlight = null
+  var squareClass = 'square-55d63'
   var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
   var $gameTurn = null
 
@@ -515,6 +521,11 @@
 
   function onMouseoutSquare (square, piece) {
     removeGreySquares()
+  }
+
+  function removeHighlights (color) {
+  $board.find('.' + squareClass)
+    .removeClass('highlight-' + color)
   }
 
   // update the board position after the piece snap

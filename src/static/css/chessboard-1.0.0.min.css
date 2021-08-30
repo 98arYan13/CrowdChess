@@ -54,3 +54,11 @@
 .piece-417db {
     z-index: 2;
 }
+
+.highlight-w {
+    box-shadow: inset 0 0 3px 3px yellow;
+}
+
+.highlight-b {
+    box-shadow: inset 0 0 3px 3px blue;
+}
