@@ -58,8 +58,8 @@ function drawArrow(arrow, color) {
     ctx.fill();
 
     // remove canvas on click over boardchess if existed
-    $('#canvas').on('click', function() {
+    /*$('#canvas').on('click', function() {
         $('#canvas').remove();
-    });
+    });*/
     
 }
