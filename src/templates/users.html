@@ -139,6 +139,8 @@
   socket_users.on('update_client_interface', function(data){
     // load fen to chess (game)
     game.load(data.fen);
+    // set gameTurn for prevent user pick wrong color pieces before press confirm button
+    $gameTurn = game.turn();
     // update board position
     board.position(data.fen);
     // update game status
@@ -420,6 +422,7 @@
   var whiteSquareGrey = '#a9a9a9'
   var blackSquareGrey = '#696969'
   var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
+  var $gameTurn = null
 
   // remove grey squares
   function removeGreySquares () {
@@ -443,8 +446,8 @@
     if (game.game_over()) return false
 
     // only pick up pieces for the side to move
-    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    if (($gameTurn === 'w' && piece.search(/^b/) !== -1) ||
+        ($gameTurn === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
 
