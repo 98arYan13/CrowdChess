@@ -103,7 +103,7 @@ def move_from_user(move):
     moves_list.append(move['from'] + move['to'])
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     print('active_users length: ', len(active_users))
-    if len(moves_list) == len(active_users): # call aggregation if all users do thier move
+    if len(moves_list) >= len(active_users): # call aggregation if all active users do thier move
         global prevent_drag
         prevent_drag = True
         emit('preventDrag', prevent_drag, broadcast=True)
@@ -116,6 +116,6 @@ def choice_from_user(choice):
     global moves_list
     moves_list.append(choice['uArrow'] + choice['oArrow']) # stringify uArrow and oArrow for simplicity of counter list
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
-    if len(moves_list) == len(active_users): # call aggregation when all users do their move
+    if len(moves_list) >= len(active_users): # call aggregation when all active users do their move
         aggregation(moves_list)
         moves_list = [] # emptying moves list for next aggregation
