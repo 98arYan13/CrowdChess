@@ -18,6 +18,9 @@
   <div class="row">
     <div class="col-5">
 
+      <!-- game status -->
+      <strong class="mx-auto"><div id="status"></div></strong>
+
       <!-- chess board view -->
       <div id="chess_board" class="row mx-auto mb-2" style="width: 400px; height: 400px;">
       </div>
@@ -25,10 +28,14 @@
       <!-- game controls -->
       <div class="row mx-auto mb-2" style="width: 400px;">
 
-        <!-- game status -->
-        <strong class="mx-auto"><div id="status"></div></strong>
-        <hr>
-        <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
+        <div class="row mx-auto mb-2" style="width: 400px;">
+          <button id="confirm_choice" type="button" class="btn btn-success mr-2">Confirm</button>
+          <!-- choose computer recommend move -->
+          <div id="recommend_choices" class="btn-group ml-2">
+            <div id="choices"></div>
+          </div>
+          <hr>
+        </div>
 
         <!-- -buttons -->
         <div class="btn-group">
@@ -36,13 +43,6 @@
           <button id="take_back" class="btn btn-outline-secondary">Take back</button>
           <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
           <button id="recommend_moves" class="btn btn-outline-secondary">Recommend Move(s)</button>
-        </div>
-        <hr>
-
-        <!-- choose computer recommend move -->
-        <div id="recommend_choices" class="row mx-auto mt-2 mb-2" style="width: 400px;">
-          <div id="choices" class="btn-group ml-2">
-          </div>
         </div>
         <hr>
 
@@ -134,20 +134,27 @@
     console.log('visiting main page users: ' + parseInt(data.users_count))
   });
 
-  // prevent the board to drag pieces when server command it
-  var preventDrag = false
-  socket_users.on('preventDrag', function(prevent_drag){
-    globalThis.preventDrag = prevent_drag;
-  });
-
-  // update client board and chess core
-  socket_users.on("update_clint_board", function(fen) {
+  // update board and chess core
+  socket_users.on('update_client_board', function(fen){
     // load fen to chess (game)
     game.load(fen);
     // update board position
     board.position(fen);
     // update game status
     updateStatus();
+  });
+
+  // prevent the board to drag pieces when server command it
+  var preventDrag = false
+  socket_users.on('preventDrag', function(prevent_drag){
+    globalThis.preventDrag = prevent_drag;
+  });
+
+  // set availiblity of recommend choices
+  var recommendMovesObj = null
+  socket_users.on('recommendMovesObj', function(recommend_moves_obj){
+    recommendMovesObj = recommend_moves_obj;
+    if(recommendMovesObj != null) {recommend_moves(recommendMovesObj)};
   });
 
   // alert message recieved from server
@@ -165,7 +172,7 @@
   $("#confirm_choice").attr('disabled', true);
 
   // hide recommended choices by computer to users by default
-  $('#recommend_choices').hide()
+  //$('#recommend_choices').hide()
 
   // max legal moves
   function max_legal_moves() {
