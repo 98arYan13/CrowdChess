@@ -13,7 +13,7 @@ aggregator = Blueprint('aggregator', __name__)
 
 
 moves_list = [] # empty moves list
-fen = get_fen() # fen
+fen, max_legal_moves = get_fen() # fen and Maximum legal moves for current playable color
 prevent_drag = False # prevent client board to drag move
 recommend_moves_obj = None # availiblity of recommend choices
 
@@ -40,7 +40,7 @@ def authenticated_only(f):
 def on_connect(auth):
     users_count = len(act_users('add', active_users))
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
-    emit('update_client_board', fen)
+    emit('update_client_board', {'fen':fen, 'max_legal_moves':max_legal_moves})
     emit('preventDrag', prevent_drag)
     emit('recommendMovesObj', recommend_moves_obj)
 
@@ -80,22 +80,22 @@ def aggregation(moves_list):
             consensus_move = consensus_move[0:4]
         # update pgn file with given legall san
         update_pgn_file(consensus_move)
-        global fen
-        fen = get_fen() # FEN of current game
-        emit('update_client_board', fen, broadcast=True) # force client to move "consensus_move"
+        global fen, max_legal_moves
+        fen, max_legal_moves = get_fen() # FEN of current game
+        emit('update_client_board', {'fen':fen, 'max_legal_moves':max_legal_moves}, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
         if computer_move == 'xxxx':
             computer_move = make_move()
             update_pgn_file(computer_move['best_move'])
         else:
             update_pgn_file(computer_move)
-        fen = get_fen() # FEN of current game
-        emit('update_client_board', fen, broadcast=True) # force client to move "computer_move"
+        fen, max_legal_moves = get_fen() # FEN of current game
+        emit('update_client_board', {'fen':fen, 'max_legal_moves':max_legal_moves}, broadcast=True) # force client to move "computer_move"
         prevent_drag = False
         emit('preventDrag', prevent_drag, broadcast=True)
     else:
         print('consensus not reached, recommendation')
-        emit('update_client_board', fen, broadcast=True) # force client to move "computer_move"
+        emit('update_client_board', {'fen':fen, 'max_legal_moves':max_legal_moves}, broadcast=True) # force client to move "computer_move"
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
         recommend_moves_obj = recommend_moves()
         emit('recommend_choice', recommend_moves_obj, broadcast=True)

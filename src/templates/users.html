@@ -134,14 +134,18 @@
     console.log('visiting main page users: ' + parseInt(data.users_count))
   });
 
+  var maxLegalMoves = null;
   // update board and chess core
-  socket_users.on('update_client_board', function(fen){
+  socket_users.on('update_client_board', function(data){
     // load fen to chess (game)
-    game.load(fen);
+    game.load(data.fen);
     // update board position
-    board.position(fen);
+    board.position(data.fen);
     // update game status
     updateStatus();
+    // set max legal moves
+    globalThis.maxLegalMoves = data.max_legal_moves;
+    $max_legal_moves.text(maxLegalMoves); // maximum legal moves for next color
   });
 
   // prevent the board to drag pieces when server command it
@@ -174,15 +178,6 @@
   // hide recommended choices by computer to users by default
   //$('#recommend_choices').hide()
 
-  // max legal moves
-  function max_legal_moves() {
-    $.post('/max_legal_moves',{
-        'pgn': game.pgn()
-      }, function(data) {
-        $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
-      });
-  }
-  
   // recommended moves
   function recommend_moves(data) {
     // disable take back button
@@ -264,8 +259,6 @@
       // hide alert if exists
       $('#collapseAlert').collapse('hide');
       
-      max_legal_moves();
-
       // remove canvas
       $('#canvas').remove();
       // remove previous choices button
@@ -297,8 +290,6 @@
     // update game status
     updateStatus();
     
-    max_legal_moves();
-
     // re-enable take back button
     $('#take_back').attr('disabled', false);
   }
@@ -315,7 +306,6 @@
     // set initial board position
     board.position('start');
 
-    max_legal_moves();
   });
   
   // handle take back button click
@@ -331,8 +321,6 @@
     // update board position
     board.position(game.fen());
 
-    max_legal_moves();
-    
     // update game status
     updateStatus();
   });

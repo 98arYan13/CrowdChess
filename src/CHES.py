@@ -39,12 +39,11 @@ def get_fen():
         game = chess.pgn.read_game(pgn)
     board = game.end().board()
     fen = board.fen()
+    max_legal_moves = board.legal_moves.count()
     print('\nnew fen:', fen, '\n')
-    return fen
+    return fen, max_legal_moves
 
-
-# Maximum legal moves for current playable color
-@CHES.route('/max_legal_moves', methods=['POST'])
+"""# Maximum legal moves for current playable color
 def max_legal_moves():
     try:
         # TODO: better to use fen instead of pgn
@@ -55,7 +54,7 @@ def max_legal_moves():
             board.push(move)
         return {'max_legal_moves': board.legal_moves.count()}
     except: # if new game
-        return {'max_legal_moves': '20'}
+        return {'max_legal_moves': '20'}"""
 
 # make move from aggregator
 def make_move():
