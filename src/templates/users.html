@@ -136,7 +136,7 @@
 
   var maxLegalMoves = null;
   // update board and chess core
-  socket_users.on('update_client_board', function(data){
+  socket_users.on('update_client_interface', function(data){
     // load fen to chess (game)
     game.load(data.fen);
     // update board position
