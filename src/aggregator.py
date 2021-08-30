@@ -1,7 +1,7 @@
 # this is aggregator for CrowdChess project
 import functools
 from collections import Counter
-from flask import Blueprint, flash
+from flask import Blueprint
 from flask_login import current_user, login_required
 from flask_socketio import emit, disconnect
 from __init__ import socketio

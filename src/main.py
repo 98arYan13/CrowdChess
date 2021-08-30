@@ -1,7 +1,6 @@
-import functools
-from flask import Blueprint, render_template, flash, request
+from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
-from flask_socketio import disconnect, emit, send
+from flask_socketio import emit
 from __init__ import create_app, socketio
 
 
