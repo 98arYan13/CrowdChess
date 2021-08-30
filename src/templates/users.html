@@ -144,8 +144,7 @@
     // update game status
     updateStatus();
     // set max legal moves
-    globalThis.maxLegalMoves = data.max_legal_moves;
-    $max_legal_moves.text(maxLegalMoves); // maximum legal moves for next color
+    $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
   });
 
   // prevent the board to drag pieces when server command it
