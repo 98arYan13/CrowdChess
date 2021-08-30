@@ -15,6 +15,7 @@ aggregator = Blueprint('aggregator', __name__)
 moves_list = [] # empty moves list
 fen = get_fen() # fen
 prevent_drag = False # prevent client board to drag move
+recommend_moves_obj = None # availiblity of recommend choices
 
 active_users = set() # users present on users.html page
 def act_users(method, active_users):
@@ -39,9 +40,9 @@ def authenticated_only(f):
 def on_connect(auth):
     users_count = len(act_users('add', active_users))
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
-    emit('update_clint_board', fen)
-    print(prevent_drag)
+    emit('update_client_board', fen)
     emit('preventDrag', prevent_drag)
+    emit('recommendMovesObj', recommend_moves_obj)
 
 @socketio.on('disconnect', namespace='/users')
 @login_required
@@ -71,6 +72,9 @@ def aggregation(moves_list):
         consensus_move = moves_list[0]
         consensus = True # consensus reached
     if consensus:
+        global recommend_moves_obj
+        recommend_moves_obj = None
+        print('\nconsensus reached\n')
         if len(consensus_move) > 4: # when recommend choice
             computer_move = consensus_move[4:]
             consensus_move = consensus_move[0:4]
@@ -78,7 +82,7 @@ def aggregation(moves_list):
         update_pgn_file(consensus_move)
         global fen
         fen = get_fen() # FEN of current game
-        emit('update_clint_board', fen, broadcast=True) # force client to move "consensus_move"
+        emit('update_client_board', fen, broadcast=True) # force client to move "consensus_move"
         # move for computer on client side
         if computer_move == 'xxxx':
             computer_move = make_move()
@@ -86,13 +90,15 @@ def aggregation(moves_list):
         else:
             update_pgn_file(computer_move)
         fen = get_fen() # FEN of current game
-        emit('update_clint_board', fen, broadcast=True) # force client to move "computer_move"
+        emit('update_client_board', fen, broadcast=True) # force client to move "computer_move"
         prevent_drag = False
         emit('preventDrag', prevent_drag, broadcast=True)
     else:
-        emit('update_clint_board', fen, broadcast=True) # force client to move "computer_move"
+        print('consensus not reached, recommendation')
+        emit('update_client_board', fen, broadcast=True) # force client to move "computer_move"
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
-        emit('recommend_choice', recommend_moves(), broadcast=True)
+        recommend_moves_obj = recommend_moves()
+        emit('recommend_choice', recommend_moves_obj, broadcast=True)
 
 
 @socketio.on("move_from_user", namespace='/users')
