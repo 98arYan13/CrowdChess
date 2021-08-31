@@ -552,7 +552,6 @@
     }
 
     var status = ''
-
     var moveColor = 'White'
     var checkedKing = {type: "k", color: "w"};
     if (game.turn() === 'b') {
@@ -565,7 +564,7 @@
     // checkmate?
     if (game.in_checkmate()) {
       status = 'Game over, ' + moveColor + ' is in checkmate.'
-      // get position of checked king
+      // get position of checkmated king
       var checkedKingPosition = get_piece_positions(game, checkedKing)
       $board.find('.square-' + checkedKingPosition[0]).addClass('highlight-red')
     }
@@ -582,7 +581,6 @@
       // check?
       if (game.in_check()) {
         status += ', ' + moveColor + ' is in check'
-
         // get position of checked king
         var checkedKingPosition = get_piece_positions(game, checkedKing)
         $board.find('.square-' + checkedKingPosition[0]).addClass('highlight-red')
