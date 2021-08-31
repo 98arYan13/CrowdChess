@@ -536,11 +536,28 @@
 
   // update game status
   function updateStatus () {
+
+    // Get position of piece
+    // reference: https://github.com/jhlywa/chess.js/issues/174
+    var get_piece_positions = (game, piece) => {
+      return [].concat(...game.board()).map((p, index) => {
+        if (p !== null && p.type === piece.type && p.color === piece.color) {
+          return index
+        }
+      }).filter(Number.isInteger).map((piece_index) => {
+        const row = 'abcdefgh'[piece_index % 8]
+        const column = Math.ceil((64 - piece_index) / 8)
+        return row + column
+      })
+    }
+
     var status = ''
 
     var moveColor = 'White'
+    var checkedKing = {type: "k", color: "w"};
     if (game.turn() === 'b') {
       moveColor = 'Black'
+      checkedKing = {type: "k", color: "b"};
     }
 
     removeHighlights('red')
@@ -548,6 +565,9 @@
     // checkmate?
     if (game.in_checkmate()) {
       status = 'Game over, ' + moveColor + ' is in checkmate.'
+      // get position of checked king
+      var checkedKingPosition = get_piece_positions(game, checkedKing)
+      $board.find('.square-' + checkedKingPosition[0]).addClass('highlight-red')
     }
 
     // draw?
@@ -562,21 +582,7 @@
       // check?
       if (game.in_check()) {
         status += ', ' + moveColor + ' is in check'
-        // Get position of piece
-        // reference: https://github.com/jhlywa/chess.js/issues/174
-        var get_piece_positions = (game, piece) => {
-          return [].concat(...game.board()).map((p, index) => {
-            if (p !== null && p.type === piece.type && p.color === piece.color) {
-              return index
-            }
-          }).filter(Number.isInteger).map((piece_index) => {
-            const row = 'abcdefgh'[piece_index % 8]
-            const column = Math.ceil((64 - piece_index) / 8)
-            return row + column
-          })
-        }
-        var checkedKing = {type: "k", color: "w"};
-        if (game.turn() === 'b') checkedKing = {type: "k", color: "b"};
+
         // get position of checked king
         var checkedKingPosition = get_piece_positions(game, checkedKing)
         $board.find('.square-' + checkedKingPosition[0]).addClass('highlight-red')
