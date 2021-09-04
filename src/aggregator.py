@@ -101,8 +101,14 @@ def aggregation(moves_list):
         emit('preventDrag', prevent_drag, broadcast=True)
     else:
         print('consensus not reached, recommendation')
-        last_move_from, last_move_to = last_move_san[0:2], last_move_san[2:]
-        emit('update_client_interface', {'fen':fen, 'max_legal_moves':max_legal_moves, 'last_move_from':last_move_from, 'last_move_to':last_move_to}, broadcast=True) # force client to move "computer_move"
+        if last_move_san: # for first move, there is no last_move_san
+            last_move_from, last_move_to = last_move_san[0:2], last_move_san[2:]
+            emit('update_client_interface', {'fen':fen,
+            'max_legal_moves':max_legal_moves, 'last_move_from':last_move_from,
+            'last_move_to':last_move_to}, broadcast=True) # force client to move "computer_move"
+        else:
+            emit('update_client_interface', {'fen':fen,
+            'max_legal_moves':max_legal_moves}, broadcast=True) # force client to move "computer_move"
         emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
         recommend_moves_obj = recommend_moves()
         emit('recommend_choice', recommend_moves_obj, broadcast=True)
