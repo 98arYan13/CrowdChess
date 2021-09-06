@@ -42,9 +42,8 @@
         <!-- -buttons -->
         <div class="btn-group">
           <button id="new_game" class="btn btn-outline-secondary">New game</button>
-          <button id="take_back" class="btn btn-outline-secondary">Take back</button>
+          <button id="take_back" class="btn btn-outline-secondary take_back">Take back</button>
           <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
-          <button id="recommend_moves" class="btn btn-outline-secondary">Recommend Move(s)</button>
         </div>
         <hr>
 
@@ -150,8 +149,11 @@
     $board.find('.square-' + data.last_move_to).addClass('highlight-' + $gameTurn)
     // update game status
     updateStatus();
-    // set max legal moves
     $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
+    $glowingTime = data.glowing_time;
+    document.getElementById("take_back").style.animationDuration = $glowingTime; 
+    $take_back_votes_count = data.take_back_votes_count
+
   });
 
   // prevent the board to drag pieces when server command it
@@ -173,10 +175,24 @@
     $('#alertMessage').text(msg);
   });
 
-  // show recommend choices
+  // if consensus not reached, user must choose from recommend_choice
   socket_users.on('recommend_choice', (data) => {
     recommend_moves(data);
+    // update game status
+    updateStatus();
   });
+
+  // if user pushed take_back button
+  socket_users.on('glow_take_back_button', function(data){
+    $glowingTime = data.glowing_time;
+    $take_back_votes_count = data.take_back_votes_count
+    document.getElementById("take_back").style.animationDuration = $glowingTime; 
+  });
+
+  // if user pushed take_back button again
+  /*socket_users.on('cansel_take_back', function(){
+    document.getElementById("take_back").style.animationDuration = "0ms"; 
+  });*/
 
   // disable confirm_choice button
   $("#confirm_choice").attr('disabled', true);
@@ -283,7 +299,7 @@
   }
 
   // make computer move
-  function make_move(data) {
+  /*function make_move(data) {
     // disable take back button
     $('#take_back').attr('disabled', true);
 
@@ -305,7 +321,7 @@
     
     // re-enable take back button
     $('#take_back').attr('disabled', false);
-  }
+  }*/
 
   // handle new game button click
   $('#new_game').on('click', function() {
@@ -324,24 +340,20 @@
   // handle take back button click
   $('#take_back').on('click', function() {
     // hide remained recommend_choices from before
-    $('#recommend_choices').hide()
+    //$('#recommend_choices').hide()
     
-    $('#canvas').remove();
-    // take move back
-    game.undo();
-    game.undo();
+    socket_users.emit('vote_take_back');
+    // add glowing attribute to button
+    //var glowingSpeed = "3000ms"; // min=20ms , max = 3000ms
+    //document.getElementById("take_back").style.animationDuration = glowingSpeed;
     
-    // update board position
-    board.position(game.fen());
-
-    // update game status
-    updateStatus();
   });
   
   // handle flip board button click
   $('#flip_board').on('click', function() {
     // flip board
     board.flip();
+    updateStatus();
     $("#canvas").remove();    
   });
   
@@ -437,7 +449,9 @@
   var squareToHighlight = null
   var squareClass = 'square-55d63'
   var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
-  var $gameTurn = null
+  var $gameTurn = null;
+  var $glowingTime = "0ms";
+  var $take_back_votes_count = 0;
 
   // remove grey squares
   function removeGreySquares () {
@@ -500,13 +514,6 @@
     });
 
   }
-
-  // if consensus not reached, user must choose from recommend_choice
-  socket_users.on('recommend_choice', (data) => {
-    recommend_moves(data);
-    // update game status
-    updateStatus();
-  });
 
   // highlight legal moves
   function onMouseoverSquare (square, piece) {

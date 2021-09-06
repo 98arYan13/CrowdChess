@@ -15,14 +15,20 @@ CHES = Blueprint('CHES', __name__)
 # FEN for start game
 FEN = config.FEN
 
+# disable take_back button at begining of game
+disable_take_back = True
+
 # create a new PGN file
-pgn_file_name = config.pgn_file_name
-with open('./datas/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
-    game = chess.pgn.Game()
-    if FEN:
-        game.setup(FEN)
-    exporter = chess.pgn.FileExporter(pgn)
-    game.end().accept(exporter)
+pgn_file_name = None
+def create_new_pgn():
+    global pgn_file_name
+    pgn_file_name = config.pgn_file_name
+    with open('./datas/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
+        game = chess.pgn.Game()
+        if FEN:
+            game.setup(FEN)
+        exporter = chess.pgn.FileExporter(pgn)
+        game.end().accept(exporter)
 
 # update pgn file with given legall san
 def update_pgn_file(SAN):
@@ -41,7 +47,16 @@ def get_fen():
     fen = board.fen()
     max_legal_moves = board.legal_moves.count()
     print('\nnew fen:', fen, '\n')
+    fen_hist(fen)
     return fen, max_legal_moves
+
+# storing fen history of every played moves
+fen_history = []
+def fen_hist(fen):
+    global fen_history
+    fen_history.append(fen)
+    print(fen_history)
+
 
 """# Maximum legal moves for current playable color
 def max_legal_moves():
@@ -212,3 +227,21 @@ def recommend_moves():
         'depth_array': [str(i['depth']) for i in info],
         'pv_array': [' '.join([str(move) for move in i['pv']]) for i in info]
     }
+
+
+def take_back():
+    """
+    take_back move to previous game of users.
+    (for simplicity, game continues based on new pgn.
+    because every time that take_back called, pgn gets a little difficult to handle.
+    but this is not a good idea! it is better to create a new node on
+    previous move in the main pgn file)
+    """
+    global fen_history, FEN
+    fen_history.pop()
+    fen_history.pop()
+    FEN = fen_history[-1] # set FEN to last element of fen_history list
+    create_new_pgn() # create a new pgn file with updated name
+
+
+create_new_pgn() # create a new pgn file with updated name
