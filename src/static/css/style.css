@@ -27,3 +27,31 @@ position: absolute;
     position: absolute;
     opacity: 0.4;
 }
+
+.take_back {
+    animation: glowing 0ms infinite;
+}
+
+@-webkit-keyframes glowing {
+    0% { background-color: #FFFF00; -webkit-box-shadow: 0 0 3px #FFFF00; }
+    50% { background-color: #FFFFFF; -webkit-box-shadow: 0 0 40px #FFFFFF; }
+    100% { background-color: #FFFF00; -webkit-box-shadow: 0 0 3px #FFFF00; }
+}
+
+@-moz-keyframes glowing {
+    0% { background-color: #FFFF00; -moz-box-shadow: 0 0 3px #FFFF00; }
+    50% { background-color: #FFFFFF; -moz-box-shadow: 0 0 40px #FFFFFF; }
+    100% { background-color: #FFFF00; -moz-box-shadow: 0 0 3px #FFFF00; }
+}
+
+@-o-keyframes glowing {
+    0% { background-color: #FFFF00; box-shadow: 0 0 3px #FFFF00; }
+    50% { background-color: #FFFFFF; box-shadow: 0 0 40px #FFFFFF; }
+    100% { background-color: #FFFF00; box-shadow: 0 0 3px #FFFF00; }
+}
+
+@keyframes glowing {
+    0% { background-color: #FFFF00; box-shadow: 0 0 3px #FFFF00; }
+    50% { background-color: #FFFFFF; box-shadow: 0 0 40px #FFFFFF; }
+    100% { background-color: #FFFF00; box-shadow: 0 0 3px #FFFF00; }
+}
