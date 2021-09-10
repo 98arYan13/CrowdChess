@@ -73,7 +73,7 @@ def aggregation(moves_list):
     global prevent_drag
     if len(Counter(moves_list)) > 1: # if second most_common move exist (if different moves)
         if Counter(moves_list).most_common()[0][1] > Counter(moves_list).most_common()[1][1]: # if count of most frequent move is bigger than second most frequent (or actually all others)
-            consensus_move = Counter(moves_list).most_common()[0][1] # if most frequent move is the Majority
+            consensus_move = Counter(moves_list).most_common()[0][0] # if most frequent move is the Majority
             consensus = True # consensus reached
     elif len(Counter(moves_list)) == 1: # if all moves are the same
         consensus_move = moves_list[0]
