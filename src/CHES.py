@@ -55,6 +55,8 @@ fen_history = []
 def fen_hist(fen):
     global fen_history
     fen_history.append(fen)
+    if len(fen_history) == 2 and fen_history[0] == fen_history[1]: # prevent duplicate first fen
+        fen_history.pop()
     print(fen_history)
 
 
