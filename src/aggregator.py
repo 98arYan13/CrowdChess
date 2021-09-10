@@ -18,17 +18,11 @@ fen, max_legal_moves = get_fen() # fen and Maximum legal moves for current playa
 prevent_drag = False # prevent client board to drag move
 recommend_moves_obj = None # availiblity of recommend choices
 last_move_san = None # san of last approved move by server
+active_users = set() # users present on users.html page
 users_count = 0 # number of active users on main page
 glowing_time = '0ms' # glowing time
 take_back_votes_count = 0 # number of votes to take_back move
 
-active_users = set() # users present on users.html page
-def act_users(method, active_users):
-    if method == "add":
-        active_users.add(current_user.email)
-    elif method == "remove":
-        active_users.remove(current_user.email)
-    return active_users
 
 # Using Flask-Login with Flask-SocketIO
 def authenticated_only(f):
@@ -43,8 +37,9 @@ def authenticated_only(f):
 @socketio.on('connect', namespace='/users')
 @login_required
 def on_connect(auth):
-    global users_count
-    users_count = len(act_users('add', active_users))
+    global users_count, active_users
+    active_users.add(current_user.email)
+    users_count = len(active_users)
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
     emit('update_client_interface', {
         'fen':fen,
@@ -57,7 +52,9 @@ def on_connect(auth):
 @socketio.on('disconnect', namespace='/users')
 @login_required
 def test_disconnect():
-    users_count = len(act_users('remove', active_users))
+    global users_count, active_users
+    active_users.remove(current_user.email)
+    users_count = len(active_users)
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
     print(f'\nuser {current_user.name} leaved the main page\n')
 
