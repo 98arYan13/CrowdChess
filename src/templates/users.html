@@ -41,8 +41,8 @@
 
         <!-- -buttons -->
         <div class="btn-group">
-          <button id="new_game" class="btn btn-outline-secondary">New game</button>
-          <button id="take_back" class="btn btn-outline-secondary take_back">Take back</button>
+          <button id="new_game" class="btn btn-outline-secondary">New game<span id="new_game_badge" class="badge badge-light"></span></button>
+          <button id="take_back" class="btn btn-outline-secondary take_back">Take back<span id="take_back_badge" class="badge badge-light"></span></button>
           <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
         </div>
         <hr>
@@ -151,9 +151,8 @@
     // update game status
     updateStatus();
     $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
-    $glowingTime = data.glowing_time;
-    document.getElementById("take_back").style.animationDuration = $glowingTime; 
-    $take_back_votes_count = data.take_back_votes_count
+    $takeBackPercentage.text(data.take_back_percentage);
+    //$take_back_votes_count = data.take_back_votes_count
 
   });
 
@@ -184,10 +183,9 @@
   });
 
   // if user pushed take_back button
-  socket_users.on('glow_take_back_button', function(data){
-    $glowingTime = data.glowing_time;
-    $take_back_votes_count = data.take_back_votes_count
-    document.getElementById("take_back").style.animationDuration = $glowingTime; 
+  socket_users.on('take_back_percentage', function(data){
+    $takeBackPercentage.text(data.take_back_percentage);
+    //$take_back_votes_count = data.take_back_votes_count
   });
 
   // if user pushed take_back button again
@@ -451,7 +449,7 @@
   var squareClass = 'square-55d63'
   var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
   var $gameTurn = null;
-  var $glowingTime = "0ms";
+  var $takeBackPercentage = $("#take_back_badge");
   var $take_back_votes_count = 0;
 
   // remove grey squares

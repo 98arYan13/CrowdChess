@@ -20,8 +20,8 @@ recommend_moves_obj = None # availiblity of recommend choices
 last_move_san = None # san of last approved move by server
 active_users = set() # users present on users.html page
 users_count = 0 # number of active users on main page
-glowing_time = '0ms' # glowing time
 take_back_votes_count = 0 # number of votes to take_back move
+take_back_percentage = '' # percentage of users that want take_back
 
 
 # Using Flask-Login with Flask-SocketIO
@@ -44,7 +44,7 @@ def on_connect(auth):
     emit('update_client_interface', {
         'fen':fen,
         'max_legal_moves':max_legal_moves,
-        'glowing_time':glowing_time,
+        'take_back_percentage':take_back_percentage,
         'take_back_votes_count':take_back_votes_count})
     emit('preventDrag', prevent_drag)
     emit('recommendMovesObj', recommend_moves_obj)
@@ -80,7 +80,9 @@ def aggregation(moves_list):
         consensus = True # consensus reached
 
     if consensus:
-        global recommend_moves_obj
+        global recommend_moves_obj, take_back_votes, new_game_votes
+        take_back_votes.clear() # when consensus reached, all secondary votes must be ignored
+        new_game_votes.clear() # when consensus reached, all secondary votes must be ignored
         recommend_moves_obj = None
         print('\nconsensus reached\n')
         if len(consensus_move) > 4: # when recommend choice
@@ -170,6 +172,8 @@ def vote_take_back():
     If 2/3 of all active users voted to take_bake, so it applies.
     ( 2/3 is optional )
     """
+    global take_back_percentage ,max_legal_moves, fen,\
+        take_back_votes_count, take_back_votes
     if len(fen_history) >= 3: # for take_back it must at least 3 fen exist (1 remain with 2 move pop)
         if current_user.email not in take_back_votes: # if user pushed take_back button
             take_back_votes.add(current_user.email)
@@ -177,21 +181,26 @@ def vote_take_back():
             take_back_votes.remove(current_user.email)
 
         print('\ntake_back_votes :', take_back_votes)
-        global glowing_time, take_back_votes_count, fen, max_legal_moves
         take_back_votes_count = len(take_back_votes)
         if (take_back_votes_count == 0) or (users_count == 0):
-            glowing_time = '0ms'
-        elif take_back_votes_count / users_count >= (2/3) : # if more than 2/3 of users vote to take_back
+            take_back_percentage = ''
+        elif take_back_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to take_back
             take_back() # consensus to do take_back
             fen, max_legal_moves = get_fen() # FEN of current game
             emit('update_client_interface', {'fen':fen,
             'max_legal_moves':max_legal_moves}, broadcast=True) # force client to take_back
-            glowing_time = '0ms'
+            take_back_percentage = ''
             take_back_votes.clear()
             take_back_votes_count = 0
         else:
-            glowing_time = str(int(3000 - (3000-20) / ((2/3) * users_count - 1)
-                * (take_back_votes_count - 1))) + 'ms'
+            take_back_percentage = str(take_back_votes_count / users_count
+                * 100) + '%'
 
-        emit('glow_take_back_button', {'glowing_time':glowing_time,
-            'take_back_votes_count':take_back_votes_count}, broadcast=True)
+        emit('take_back_percentage', {'take_back_percentage':
+            take_back_percentage}, broadcast=True)
+
+
+new_game_votes = set() # users voted to take_back
+@socketio.on("vote_new_game", namespace='/users')
+def vote_new_game():
+    pass
