@@ -127,11 +127,12 @@
     $(".status-circle").css("background-color", "#90EE90"); // light green
   });
   socket_users.on('disconnect', () => {
-    $("#total_online_users").text('n/a');
+    $("#participant_users").text('n/a');
     $(".status-circle").css("background-color", "grey");
   });
   // currently present users on homepage (main page)
   socket_users.on('on_main_page_users', function(data) {
+    $("#participant_users").text(data.users_count);
     console.log('visiting main page users: ' + parseInt(data.users_count))
   });
 
