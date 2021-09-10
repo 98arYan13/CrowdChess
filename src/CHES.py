@@ -244,4 +244,4 @@ def take_back():
     create_new_pgn() # create a new pgn file with updated name
 
 
-create_new_pgn() # create a new pgn file with updated name
+create_new_pgn() # create a new pgn file with updated filename
