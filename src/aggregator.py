@@ -23,7 +23,6 @@ users_count = 0 # number of active users on main page
 take_back_votes_count = 0 # number of votes to take_back move
 take_back_percentage = '' # percentage of users that want take_back
 
-
 # Using Flask-Login with Flask-SocketIO
 def authenticated_only(f):
     @functools.wraps(f)
@@ -160,6 +159,12 @@ def choice_from_user(choice):
         moves_list = [] # emptying moves list for next aggregation
 
 
+new_game_votes = set() # users voted to take_back
+@socketio.on("vote_new_game", namespace='/users')
+def vote_new_game():
+    pass
+
+
 take_back_votes = set() # users voted to take_back
 @socketio.on("vote_take_back", namespace='/users')
 def vote_take_back():
@@ -167,10 +172,11 @@ def vote_take_back():
     This is for collect votes from users that want to take_back chess
     to their previous move.
     If users push take_back button then send a signal to back that she
-    votes take_back. But if she pushe the button again,
-    this means cansel that vote.
-    If 2/3 of all active users voted to take_bake, so it applies.
-    ( 2/3 is optional )
+    votes take_back. But if she push the button again,
+    this means cancel that vote.
+    If 1/2 of all active users voted to take_bake, a dialog apear to all users
+    to choose Yes or No. If half of them again choose Yes, so it applies.
+    ( 1/2 is optional )
     """
     global take_back_percentage ,max_legal_moves, fen,\
         take_back_votes_count, take_back_votes
@@ -185,22 +191,48 @@ def vote_take_back():
         if (take_back_votes_count == 0) or (users_count == 0):
             take_back_percentage = ''
         elif take_back_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to take_back
-            take_back() # consensus to do take_back
-            fen, max_legal_moves = get_fen() # FEN of current game
-            emit('update_client_interface', {'fen':fen,
-            'max_legal_moves':max_legal_moves}, broadcast=True) # force client to take_back
-            take_back_percentage = ''
-            take_back_votes.clear()
-            take_back_votes_count = 0
+            msg = 'Are you agree with other users\'s decision to take_back the last move?'
+            show_modal(msg) # show a modal dialog on users page to ask them choose Yes or No
+
         else:
-            take_back_percentage = str(take_back_votes_count / users_count
-                * 100) + '%'
+            take_back_percentage = str(int(take_back_votes_count / users_count
+                * 100)) + '%'
 
         emit('take_back_percentage', {'take_back_percentage':
             take_back_percentage}, broadcast=True)
 
 
-new_game_votes = set() # users voted to take_back
-@socketio.on("vote_new_game", namespace='/users')
-def vote_new_game():
-    pass
+votes = [] # list of yes or no votes
+def ack(vote):
+    global take_back_percentage ,max_legal_moves, fen,\
+        take_back_votes_count, take_back_votes
+    votes.append(vote)
+    print(votes)
+
+    if votes.count('yes') >= ((1/2) * users_count): # if majority of votes is yes
+        votes.clear()
+        print('take back')
+        take_back() # consensus to do take_back
+        fen, max_legal_moves = get_fen() # FEN of current game
+        emit('update_client_interface', {'fen':fen,
+            'max_legal_moves':max_legal_moves}, broadcast=True) # force client to take_back
+        emit('hide_modal', broadcast=True)
+        take_back_percentage = ''
+        take_back_votes.clear()
+        take_back_votes_count = 0
+
+    elif votes.count('no') >= ((1/2) * users_count):
+        votes.clear()
+        emit('hide_modal', broadcast=True)
+        take_back_percentage = ''
+        take_back_votes.clear()
+        take_back_votes_count = 0
+
+def show_modal(msg):
+    """
+    show a modal dialog on client side with a question to choose between
+    yes or no.
+    return yes or no if half of users choose any.
+    if in a period of time half of answer is not same, default is no.
+    """
+    emit('show_modal', msg, broadcast=True, callback=ack)
