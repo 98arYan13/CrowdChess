@@ -55,9 +55,9 @@
           <hr>
         </div>
 
-        <!-- -buttons -->
+        <!-- control buttons -->
         <div class="btn-group">
-          <button id="new_game" class="btn btn-outline-secondary">New game<span id="new_game_badge" class="badge badge-light"></span></button>
+          <button id="new_game" class="btn btn-outline-secondary new_game">New game<span id="new_game_badge" class="badge badge-light"></span></button>
           <button id="take_back" class="btn btn-outline-secondary take_back">Take back<span id="take_back_badge" class="badge badge-light"></span></button>
           <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
         </div>
@@ -168,8 +168,7 @@
     updateStatus();
     $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
     $takeBackPercentage.text(data.take_back_percentage);
-    //$take_back_votes_count = data.take_back_votes_count
-
+    $newGamePercentage.text(data.new_game_percentage);
   });
 
   // prevent the board to drag pieces when server command it
@@ -201,6 +200,10 @@
   // if user pushed take_back button
   socket_users.on('take_back_percentage', function(data){
     $takeBackPercentage.text(data.take_back_percentage);
+  });
+  // if user pushed new_game button
+  socket_users.on('new_game_percentage', function(data){
+    $newGamePercentage.text(data.new_game_percentage);
   });
 
   // show_modal
@@ -241,9 +244,6 @@
 
   // disable confirm_choice button
   $("#confirm_choice").attr('disabled', true);
-
-  // hide recommended choices by computer to users by default
-  //$('#recommend_choices').hide()
 
   // undo move of user by click on undo_move button
   $("#undo_move").on('click', function() {
@@ -371,14 +371,7 @@
   // handle new game button click
   $('#new_game').on('click', function() {
 
-    // hide remained recommend_choices from before
-    $('#recommend_choices').hide()
-
-    // reset board state
-    game.reset();
-    
-    // set initial board position
-    board.position('start');
+    socket_users.emit('vote_new_game');
 
   });
   
@@ -496,7 +489,7 @@
   var $max_legal_moves = $('#max_legal_moves'); // maximum legal moves for next color
   var $gameTurn = null;
   var $takeBackPercentage = $("#take_back_badge");
-  var $take_back_votes_count = 0;
+  var $newGamePercentage = $("#new_game_badge");
 
   // remove grey squares
   function removeGreySquares () {

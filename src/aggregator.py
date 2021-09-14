@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from flask_socketio import emit, disconnect
 from __init__ import socketio
 from CHES import (recommend_moves, get_fen, make_move, update_pgn_file,
-    take_back, fen_history)
+    take_back, new_game, fen_history)
 
 
 # aggregator blueprint
@@ -162,7 +162,37 @@ def choice_from_user(choice):
 new_game_votes = set() # users voted to take_back
 @socketio.on("vote_new_game", namespace='/users')
 def vote_new_game():
-    pass
+    """
+    This is for collect votes from users that want to new_game.
+    If users push new_game button then send a signal to back that she
+    votes new_game. But if she push the button again,
+    this means cancel that vote.
+    If 1/2 of all active users voted to new_game, a dialog apear to all users
+    to choose Yes or No. If half of them again choose Yes, so it applies.
+    ( 1/2 is optional )
+    """
+    global new_game_percentage ,max_legal_moves, fen,\
+        new_game_votes_count, new_game_votes
+    if len(fen_history) >= 3: # for new_game it must at least 3 fen exist (1 remain with 2 move pop)
+        if current_user.email not in new_game_votes: # if user pushed new_game button
+            new_game_votes.add(current_user.email)
+        else:                                         # if user pushed new_game button again
+            new_game_votes.remove(current_user.email)
+
+        print('\nnew_game_votes :', new_game_votes)
+        new_game_votes_count = len(new_game_votes)
+        if (new_game_votes_count == 0) or (users_count == 0):
+            new_game_percentage = ''
+        elif new_game_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to new_game
+            msg = 'Are you agree with other users\'s decision to new_game?'
+            show_modal('new_game', msg) # show a modal dialog on users page to ask them choose Yes or No for new_game method
+
+        else:
+            new_game_percentage = str(int(new_game_votes_count / users_count
+                * 100)) + '%'
+
+        emit('new_game_percentage', {'new_game_percentage':
+            new_game_percentage}, broadcast=True)
 
 
 take_back_votes = set() # users voted to take_back
@@ -192,7 +222,7 @@ def vote_take_back():
             take_back_percentage = ''
         elif take_back_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to take_back
             msg = 'Are you agree with other users\'s decision to take_back the last move?'
-            show_modal(msg) # show a modal dialog on users page to ask them choose Yes or No
+            show_modal('take_back', msg) # show a modal dialog on users page to ask them choose Yes or No for take_back method
 
         else:
             take_back_percentage = str(int(take_back_votes_count / users_count
@@ -203,7 +233,7 @@ def vote_take_back():
 
 
 votes = [] # list of yes or no votes
-def ack(vote):
+def ack_take_back(vote):
     global take_back_percentage ,max_legal_moves, fen,\
         take_back_votes_count, take_back_votes
     votes.append(vote)
@@ -228,11 +258,39 @@ def ack(vote):
         take_back_votes.clear()
         take_back_votes_count = 0
 
-def show_modal(msg):
+def ack_new_game(vote):
+    global new_game_percentage ,max_legal_moves, fen,\
+        new_game_votes_count, new_game_votes
+    votes.append(vote)
+    print(votes)
+
+    if votes.count('yes') >= ((1/2) * users_count): # if majority of votes is yes
+        votes.clear()
+        print('new game')
+        new_game() # consensus to do new_game
+        fen, max_legal_moves = get_fen() # FEN of current game
+        emit('update_client_interface', {'fen':fen,
+            'max_legal_moves':max_legal_moves}, broadcast=True) # force client to new_game
+        emit('hide_modal', broadcast=True)
+        new_game_percentage = ''
+        new_game_votes.clear()
+        new_game_votes_count = 0
+
+    elif votes.count('no') >= ((1/2) * users_count):
+        votes.clear()
+        emit('hide_modal', broadcast=True)
+        new_game_percentage = ''
+        new_game_votes.clear()
+        new_game_votes_count = 0
+
+def show_modal(method, msg):
     """
     show a modal dialog on client side with a question to choose between
     yes or no.
     return yes or no if half of users choose any.
     if in a period of time half of answer is not same, default is no.
     """
-    emit('show_modal', msg, broadcast=True, callback=ack)
+    if method == 'take_back':
+        emit('show_modal', msg, broadcast=True, callback=ack_take_back)
+    elif method == 'new_game':
+        emit('show_modal', msg, broadcast=True, callback=ack_new_game)

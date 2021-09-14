@@ -246,4 +246,14 @@ def take_back():
     create_new_pgn() # create a new pgn file with updated name
 
 
+def new_game():
+    """
+    new game
+    """
+    global fen_history, FEN
+    fen_history.clear()
+    FEN = None
+    create_new_pgn() # create a new pgn file with updated name
+
+
 create_new_pgn() # create a new pgn file with updated filename
