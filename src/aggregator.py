@@ -134,6 +134,7 @@ def aggregation(moves_list):
 
 
 @socketio.on("move_from_user", namespace='/users')
+@login_required
 def move_from_user(move):
     emit('preventDrag', True)
     print(f"\nmove form user {current_user.name}:", move, '\n')
@@ -149,6 +150,7 @@ def move_from_user(move):
         moves_list = [] # emptying moves list for next aggregation
 
 @socketio.on("choice_from_user", namespace='/users')
+@login_required
 def choice_from_user(choice):
     print(f"\nmove form user {current_user.name}:", choice, '\n')
     global moves_list
@@ -161,6 +163,7 @@ def choice_from_user(choice):
 
 new_game_votes = set() # users voted to take_back
 @socketio.on("vote_new_game", namespace='/users')
+@login_required
 def vote_new_game():
     """
     This is for collect votes from users that want to new_game.
@@ -197,6 +200,7 @@ def vote_new_game():
 
 take_back_votes = set() # users voted to take_back
 @socketio.on("vote_take_back", namespace='/users')
+@login_required
 def vote_take_back():
     """
     This is for collect votes from users that want to take_back chess
