@@ -22,6 +22,8 @@ active_users = set() # users present on users.html page
 users_count = 0 # number of active users on main page
 take_back_votes_count = 0 # number of votes to take_back move
 take_back_percentage = '' # percentage of users that want take_back
+new_game_votes_count = 0 # number of votes to new_game move
+new_game_percentage = '' # percentage of users that want new_game
 
 # Using Flask-Login with Flask-SocketIO
 def authenticated_only(f):
@@ -254,6 +256,8 @@ def ack_take_back(vote):
         take_back_percentage = ''
         take_back_votes.clear()
         take_back_votes_count = 0
+        emit('take_back_percentage', {'take_back_percentage':
+            take_back_percentage}, broadcast=True)
 
     elif votes.count('no') >= ((1/2) * users_count):
         votes.clear()
@@ -261,6 +265,8 @@ def ack_take_back(vote):
         take_back_percentage = ''
         take_back_votes.clear()
         take_back_votes_count = 0
+        emit('take_back_percentage', {'take_back_percentage':
+            take_back_percentage}, broadcast=True)
 
 def ack_new_game(vote):
     global new_game_percentage ,max_legal_moves, fen,\
@@ -279,6 +285,8 @@ def ack_new_game(vote):
         new_game_percentage = ''
         new_game_votes.clear()
         new_game_votes_count = 0
+        emit('new_game_percentage', {'new_game_percentage':
+            new_game_percentage}, broadcast=True)
 
     elif votes.count('no') >= ((1/2) * users_count):
         votes.clear()
@@ -286,6 +294,8 @@ def ack_new_game(vote):
         new_game_percentage = ''
         new_game_votes.clear()
         new_game_votes_count = 0
+        emit('new_game_percentage', {'new_game_percentage':
+            new_game_percentage}, broadcast=True)
 
 def show_modal(method, msg):
     """
