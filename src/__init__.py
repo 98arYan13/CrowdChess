@@ -41,9 +41,9 @@ def create_app(debug=False):
     from main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
-    # blueprint for chess processes CrowdChess (CHES)
-    from CHES import CHES as CHES_blueprint
-    app.register_blueprint(CHES_blueprint)
+    # blueprint for chess processes CrowdChess (ches.py)
+    from ches import ches as ches_blueprint
+    app.register_blueprint(ches_blueprint)
 
     # blueprint for aggregator for CrowdChess project (aggregator)
     from aggregator import aggregator as aggregator_blueprint

@@ -1,4 +1,4 @@
-# chess processes for CrowdChess (CHES)
+# chess processes for CrowdChess (ches)
 from flask import request
 from flask.blueprints import Blueprint
 import chess
@@ -10,7 +10,7 @@ import random
 import config
 
 
-CHES = Blueprint('CHES', __name__)
+ches = Blueprint('ches', __name__)
 
 # FEN for start game
 FEN = config.FEN
@@ -162,7 +162,7 @@ def make_move():
         }
 
 # Recommended moves
-#@CHES.route('/recommend_moves', methods=['POST'])
+#@ches.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
     # number of multipv lines for recommended moves
     MULTIPV = config.MULTIPV

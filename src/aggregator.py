@@ -5,7 +5,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from flask_socketio import emit, disconnect
 from __init__ import socketio
-from CHES import (recommend_moves, get_fen, make_move, update_pgn_file,
+from ches import (recommend_moves, get_fen, make_move, update_pgn_file,
     take_back, new_game, fen_history)
 
 
@@ -22,7 +22,7 @@ active_users = set() # users present on users.html page
 users_count = 0 # number of active users on main page
 take_back_votes_count = 0 # number of votes to take_back move
 take_back_percentage = '' # percentage of users that want take_back
-new_game_votes_count = 0 # number of votes to new_game move
+new_game_votes_count = 0 # number of votes to new_game
 new_game_percentage = '' # percentage of users that want new_game
 
 # Using Flask-Login with Flask-SocketIO
