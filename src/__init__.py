@@ -1,4 +1,6 @@
 # Initialize app
+
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -10,7 +12,8 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 # socketio
-socketio = SocketIO(engineio_logger=config.engineio_logger, logger=config.logger)
+socketio = SocketIO(engineio_logger=config.engineio_logger, logger=config.logger,
+                    async_mode = 'threading')
 
 def create_app(debug=False):
     # Construct the core app object

@@ -1,5 +1,8 @@
 # this is aggregator for CrowdChess project
+
+
 import functools
+import time
 from collections import Counter
 from flask import Blueprint
 from flask_login import current_user, login_required
@@ -15,7 +18,8 @@ aggregator = Blueprint('aggregator', __name__)
 
 moves_list = [] # empty moves list
 fen, max_legal_moves = get_fen() # fen and Maximum legal moves for current playable color
-prevent_drag = False # prevent client board to drag move
+prevent_drag = False # announce prevent client board to drag move
+agg_announce = False # aggregation announcement
 recommend_moves_obj = None # availiblity of recommend choices
 last_move_san = None # san of last approved move by server
 active_users = set() # users present on users.html page
@@ -24,6 +28,7 @@ take_back_votes_count = 0 # number of votes to take_back move
 take_back_percentage = '' # percentage of users that want take_back
 new_game_votes_count = 0 # number of votes to new_game
 new_game_percentage = '' # percentage of users that want new_game
+
 
 # Using Flask-Login with Flask-SocketIO
 def authenticated_only(f):
@@ -60,6 +65,23 @@ def test_disconnect():
     print(f'\nuser {current_user.name} leaved the main page\n')
 
 
+def countdown_aggregation(t):
+    """countdown timer for waiting to aggregate
+    """
+    print('\nTimer ON')
+    for i in range(t):
+        if agg_announce == False:
+            time.sleep(1)
+        else:
+            print('\nTimer aborted')
+            return
+
+    print('\nTimer OFF')
+
+    # call aggregaion if timeout
+    aggregation(moves_list)
+    moves_list.clear() # emptying moves list for next aggregation
+
 # Majority vote:
 def aggregation(moves_list):
     """
@@ -71,7 +93,11 @@ def aggregation(moves_list):
     """
     consensus = False
     computer_move = 'xxxx'
-    global prevent_drag
+    global prevent_drag, agg_announce
+    prevent_drag = True 
+    agg_announce = True # prevent countdown to call aggregation
+    emit('preventDrag', prevent_drag, broadcast=True)
+
     if len(Counter(moves_list)) > 1: # if second most_common move exist (if different moves)
         if Counter(moves_list).most_common()[0][1] > Counter(moves_list).most_common()[1][1]: # if count of most frequent move is bigger than second most frequent (or actually all others)
             consensus_move = Counter(moves_list).most_common()[0][0] # if most frequent move is the Majority
@@ -134,6 +160,8 @@ def aggregation(moves_list):
         recommend_moves_obj = recommend_moves()
         emit('recommend_choice', recommend_moves_obj, broadcast=True)
 
+    agg_announce = False
+
 
 @socketio.on("move_from_user", namespace='/users')
 @login_required
@@ -144,12 +172,13 @@ def move_from_user(move):
     moves_list.append(move['from'] + move['to'])
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     print('active_users length: ', len(active_users))
-    if len(moves_list) >= len(active_users): # call aggregation if all active users do thier move
-        global prevent_drag
-        prevent_drag = True
-        emit('preventDrag', prevent_drag, broadcast=True)
+
+    if len(moves_list) >= len(active_users): # call aggregation if all active users do their move
         aggregation(moves_list)
-        moves_list = [] # emptying moves list for next aggregation
+        moves_list.clear() # emptying moves list for next aggregation
+
+    elif len(moves_list) >= len(active_users) * 0.5: # if half of active users do their move
+        countdown_aggregation(10) # wait for other users' move for 60 second, then call aggregation
 
 @socketio.on("choice_from_user", namespace='/users')
 @login_required
@@ -160,7 +189,7 @@ def choice_from_user(choice):
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     if len(moves_list) >= len(active_users): # call aggregation when all active users do their move
         aggregation(moves_list)
-        moves_list = [] # emptying moves list for next aggregation
+        moves_list.clear() # emptying moves list for next aggregation
 
 
 new_game_votes = set() # users voted to take_back
