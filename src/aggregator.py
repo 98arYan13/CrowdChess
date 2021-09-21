@@ -17,9 +17,11 @@ aggregator = Blueprint('aggregator', __name__)
 
 
 moves_list = [] # empty moves list
+votes = [] # list of yes or no votes
 fen, max_legal_moves = get_fen() # fen and Maximum legal moves for current playable color
 prevent_drag = False # announce prevent client board to drag move
 agg_announce = False # aggregation announcement
+modal_announce = False # modal dialog announcement
 recommend_moves_obj = None # availiblity of recommend choices
 last_move_san = None # san of last approved move by server
 active_users = set() # users present on users.html page
@@ -29,6 +31,7 @@ take_back_percentage = '' # percentage of users that want take_back
 new_game_votes_count = 0 # number of votes to new_game
 new_game_percentage = '' # percentage of users that want new_game
 countdown_aggregation_on = False # true if countdown_aggregation() is running
+countdown_modal_on = False # true if countdown_modal() is running
 
 
 # Using Flask-Login with Flask-SocketIO
@@ -230,7 +233,7 @@ def vote_new_game():
         if (new_game_votes_count == 0) or (users_count == 0):
             new_game_percentage = ''
         elif new_game_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to new_game
-            msg = 'Are you agree with other users\'s decision to new_game?'
+            msg = 'Are you agree with other users\' decision to new_game?'
             show_modal('new_game', msg) # show a modal dialog on users page to ask them choose Yes or No for new_game method
 
         else:
@@ -279,7 +282,45 @@ def vote_take_back():
             take_back_percentage}, broadcast=True)
 
 
-votes = [] # list of yes or no votes
+def countdown_take_back_modal(t):
+    """countdown timer for take_back modal dialog
+    """
+    global countdown_modal_on, agg_announce
+    countdown_modal_on = True
+    agg_announce == True # cancel countdown_aggregation
+    print('\nmodal Timer ON')
+    for _ in range(t):
+        if modal_announce == False:
+            print('\nmodal Timer aborted')
+            countdown_modal_on = False
+            return
+        else:
+            time.sleep(1)
+
+    countdown_modal_on = False
+    print('\nmodal Timer OFF')
+
+    # if timeout
+    global take_back_percentage ,max_legal_moves, fen,\
+        take_back_votes_count, take_back_votes, agg_announce, prevent_drag
+    if votes.count('yes') >= 0.5 * len(votes): # if majority of current gathered votes is yes
+        agg_announce = True
+        emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
+        votes.clear()
+        print('take back')
+        take_back() # consensus to do take_back
+        fen, max_legal_moves = get_fen() # FEN of current game
+        emit('update_client_interface', {'fen':fen,
+            'max_legal_moves':max_legal_moves}, broadcast=True) # force client to take_back
+        emit('hide_modal', broadcast=True)
+        prevent_drag = False
+        emit('preventDrag', prevent_drag, broadcast=True)
+        take_back_percentage = ''
+        take_back_votes.clear()
+        take_back_votes_count = 0
+        emit('take_back_percentage', {'take_back_percentage':
+            take_back_percentage}, broadcast=True)
+
 def ack_take_back(vote):
     global take_back_percentage ,max_legal_moves, fen,\
         take_back_votes_count, take_back_votes, agg_announce, prevent_drag
@@ -313,6 +354,49 @@ def ack_take_back(vote):
         emit('take_back_percentage', {'take_back_percentage':
             take_back_percentage}, broadcast=True)
 
+    elif len(votes) >= ((1/2) * users_count) and not countdown_modal_on:
+        countdown_take_back_modal(30) # wait for other users' choice for 30 second, then deside what to do
+
+
+def countdown_new_game_modal(t):
+    """countdown timer for take_back modal dialog
+    """
+    global countdown_modal_on, agg_announce
+    countdown_modal_on = True
+    agg_announce == True # cancel countdown_aggregation
+    print('\nmodal Timer ON')
+    for _ in range(t):
+        if modal_announce == False:
+            print('\nmodal Timer aborted')
+            countdown_modal_on = False
+            return
+        else:
+            time.sleep(1)
+
+    countdown_modal_on = False
+    print('\nmodal Timer OFF')
+
+    # if timeout
+    global new_game_percentage ,max_legal_moves, fen,\
+        new_game_votes_count, new_game_votes, agg_announce, prevent_drag
+    if votes.count('yes') >= 0.5 * len(votes): # if majority of current gathered votes is yes
+        agg_announce = True
+        emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
+        votes.clear()
+        print('new game')
+        new_game() # consensus to do new_game
+        fen, max_legal_moves = get_fen() # FEN of current game
+        emit('update_client_interface', {'fen':fen,
+            'max_legal_moves':max_legal_moves}, broadcast=True) # force client to new_game
+        emit('hide_modal', broadcast=True)
+        prevent_drag = False
+        emit('preventDrag', prevent_drag, broadcast=True)
+        new_game_percentage = ''
+        new_game_votes.clear()
+        new_game_votes_count = 0
+        emit('new_game_percentage', {'new_game_percentage':
+            new_game_percentage}, broadcast=True)
+
 def ack_new_game(vote):
     global new_game_percentage ,max_legal_moves, fen,\
         new_game_votes_count, new_game_votes, agg_announce, prevent_drag
@@ -345,6 +429,9 @@ def ack_new_game(vote):
         new_game_votes_count = 0
         emit('new_game_percentage', {'new_game_percentage':
             new_game_percentage}, broadcast=True)
+
+    elif len(votes) >= ((1/2) * users_count) and not countdown_modal_on:
+        countdown_new_game_modal(30) # wait for other users' choice for 30 second, then deside what to do
 
 def show_modal(method, msg):
     """
