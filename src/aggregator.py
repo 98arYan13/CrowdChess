@@ -28,6 +28,7 @@ take_back_votes_count = 0 # number of votes to take_back move
 take_back_percentage = '' # percentage of users that want take_back
 new_game_votes_count = 0 # number of votes to new_game
 new_game_percentage = '' # percentage of users that want new_game
+countdown_aggregation_on = False # true if countdown_aggregation() is running
 
 
 # Using Flask-Login with Flask-SocketIO
@@ -68,14 +69,18 @@ def test_disconnect():
 def countdown_aggregation(t):
     """countdown timer for waiting to aggregate
     """
+    global countdown_aggregation_on
+    countdown_aggregation_on = True
     print('\nTimer ON')
     for i in range(t):
         if agg_announce == False:
             time.sleep(1)
         else:
             print('\nTimer aborted')
+            countdown_aggregation_on = False
             return
 
+    countdown_aggregation_on = False
     print('\nTimer OFF')
 
     # call aggregaion if timeout
@@ -178,7 +183,7 @@ def move_from_user(move):
         aggregation(moves_list)
         moves_list.clear() # emptying moves list for next aggregation
 
-    elif len(moves_list) >= len(active_users) * 0.5: # if half of active users do their move
+    elif len(moves_list) >= len(active_users) * 0.5 and not countdown_aggregation_on: # if half of active users do their move
         countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
 
 @socketio.on("choice_from_user", namespace='/users')
@@ -193,8 +198,8 @@ def choice_from_user(choice):
         aggregation(moves_list)
         moves_list.clear() # emptying moves list for next aggregation
 
-    elif len(moves_list) >= len(active_users) * 0.5: # if half of active users do their move
-        countdown_aggregation(10) # wait for other users' move for 60 second, then call aggregation
+    elif len(moves_list) >= len(active_users) * 0.5 and not countdown_aggregation_on: # if half of active users do their move
+        countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
 
 new_game_votes = set() # users voted to take_back
 @socketio.on("vote_new_game", namespace='/users')
@@ -274,11 +279,13 @@ def vote_take_back():
 votes = [] # list of yes or no votes
 def ack_take_back(vote):
     global take_back_percentage ,max_legal_moves, fen,\
-        take_back_votes_count, take_back_votes
+        take_back_votes_count, take_back_votes, agg_announce, prevent_drag
     votes.append(vote)
     print(votes)
 
     if votes.count('yes') >= ((1/2) * users_count): # if majority of votes is yes
+        agg_announce = True
+        emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
         votes.clear()
         print('take back')
         take_back() # consensus to do take_back
@@ -286,13 +293,15 @@ def ack_take_back(vote):
         emit('update_client_interface', {'fen':fen,
             'max_legal_moves':max_legal_moves}, broadcast=True) # force client to take_back
         emit('hide_modal', broadcast=True)
+        prevent_drag = False
+        emit('preventDrag', prevent_drag, broadcast=True)
         take_back_percentage = ''
         take_back_votes.clear()
         take_back_votes_count = 0
         emit('take_back_percentage', {'take_back_percentage':
             take_back_percentage}, broadcast=True)
 
-    elif votes.count('no') >= ((1/2) * users_count):
+    elif votes.count('no') >= ((1/2) * users_count) or len(votes) == users_count:
         votes.clear()
         emit('hide_modal', broadcast=True)
         take_back_percentage = ''
@@ -303,11 +312,13 @@ def ack_take_back(vote):
 
 def ack_new_game(vote):
     global new_game_percentage ,max_legal_moves, fen,\
-        new_game_votes_count, new_game_votes
+        new_game_votes_count, new_game_votes, agg_announce, prevent_drag
     votes.append(vote)
     print(votes)
 
     if votes.count('yes') >= ((1/2) * users_count): # if majority of votes is yes
+        agg_announce = True
+        emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
         votes.clear()
         print('new game')
         new_game() # consensus to do new_game
@@ -315,13 +326,15 @@ def ack_new_game(vote):
         emit('update_client_interface', {'fen':fen,
             'max_legal_moves':max_legal_moves}, broadcast=True) # force client to new_game
         emit('hide_modal', broadcast=True)
+        prevent_drag = False
+        emit('preventDrag', prevent_drag, broadcast=True)
         new_game_percentage = ''
         new_game_votes.clear()
         new_game_votes_count = 0
         emit('new_game_percentage', {'new_game_percentage':
             new_game_percentage}, broadcast=True)
 
-    elif votes.count('no') >= ((1/2) * users_count):
+    elif votes.count('no') >= ((1/2) * users_count) or len(votes) == users_count:
         votes.clear()
         emit('hide_modal', broadcast=True)
         new_game_percentage = ''
