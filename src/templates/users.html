@@ -231,27 +231,35 @@
     $('#yes').on('click', function() {
       fn('yes');
       // disable buttons on modal
-      $(".btn").attr('disabled', true);
+      $("#yes").attr('disabled', true);
+      $("#i_have_no_idea").attr('disabled', true);
+      $("#no").attr('disabled', true);
     });
     // on click "I have no idea" button (this button is not applicable and is just for storing decision datas)
     $('#i_have_no_idea').on('click', function() {
       fn('i_have_no_idea');
       // disable buttons on modal
-      $(".btn").attr('disabled', true);
+      $("#yes").attr('disabled', true);
+      $("#i_have_no_idea").attr('disabled', true);
+      $("#no").attr('disabled', true);
     });
     // on click "No" button
     $('#no').on('click', function() {
       fn('no');
       // disable buttons on modal
-      $(".btn").attr('disabled', true);
+      $("#yes").attr('disabled', true);
+      $("#i_have_no_idea").attr('disabled', true);
+      $("#no").attr('disabled', true);
     });
   });
 
   // hide modal to allow user to continue
   socket_users.on('hide_modal', function() {
     $('#modal_dialog').modal('hide');
-    // enable buttons
-    $(".btn").attr('disabled', false);
+    // enable modal buttons
+    $("#yes").attr('disabled', false);
+    $("#i_have_no_idea").attr('disabled', false);
+    $("#no").attr('disabled', false);
   });
 
   // disable confirm_choice button
