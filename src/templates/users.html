@@ -197,6 +197,18 @@
     updateStatus();
   });
 
+  // if recommend_choice event ended
+  socket_users.on('remove_recommend_choice', () => {
+    // hide alert if exists
+    $('#collapseAlert').collapse('hide');
+    // remove canvas
+    $('#canvas').remove();
+    // remove previous choices button
+    $('#choices').empty();
+    // hide recommended choices by computer to users
+    $('#recommend_choices').hide()
+  });
+
   // if user pushed take_back button
   socket_users.on('take_back_percentage', function(data){
     $takeBackPercentage.text(data.take_back_percentage);

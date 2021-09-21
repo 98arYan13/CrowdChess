@@ -79,6 +79,7 @@ def countdown_aggregation(t):
     print('\nTimer OFF')
 
     # call aggregaion if timeout
+    emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
     aggregation(moves_list)
     moves_list.clear() # emptying moves list for next aggregation
 
@@ -178,7 +179,7 @@ def move_from_user(move):
         moves_list.clear() # emptying moves list for next aggregation
 
     elif len(moves_list) >= len(active_users) * 0.5: # if half of active users do their move
-        countdown_aggregation(10) # wait for other users' move for 60 second, then call aggregation
+        countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
 
 @socketio.on("choice_from_user", namespace='/users')
 @login_required
@@ -188,9 +189,12 @@ def choice_from_user(choice):
     moves_list.append(choice['uArrow'] + choice['oArrow']) # stringify uArrow and oArrow for simplicity of counter list
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     if len(moves_list) >= len(active_users): # call aggregation when all active users do their move
+        emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
         aggregation(moves_list)
         moves_list.clear() # emptying moves list for next aggregation
 
+    elif len(moves_list) >= len(active_users) * 0.5: # if half of active users do their move
+        countdown_aggregation(10) # wait for other users' move for 60 second, then call aggregation
 
 new_game_votes = set() # users voted to take_back
 @socketio.on("vote_new_game", namespace='/users')
