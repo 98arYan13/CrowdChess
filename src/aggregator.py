@@ -72,7 +72,7 @@ def countdown_aggregation(t):
     global countdown_aggregation_on
     countdown_aggregation_on = True
     print('\nTimer ON')
-    for i in range(t):
+    for _ in range(t):
         if agg_announce == False:
             time.sleep(1)
         else:
@@ -166,6 +166,7 @@ def aggregation(moves_list):
         recommend_moves_obj = recommend_moves()
         emit('recommend_choice', recommend_moves_obj, broadcast=True)
 
+    time.sleep(1)
     agg_announce = False
 
 
@@ -186,6 +187,7 @@ def move_from_user(move):
     elif len(moves_list) >= len(active_users) * 0.5 and not countdown_aggregation_on: # if half of active users do their move
         countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
 
+
 @socketio.on("choice_from_user", namespace='/users')
 @login_required
 def choice_from_user(choice):
@@ -200,6 +202,7 @@ def choice_from_user(choice):
 
     elif len(moves_list) >= len(active_users) * 0.5 and not countdown_aggregation_on: # if half of active users do their move
         countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
+
 
 new_game_votes = set() # users voted to take_back
 @socketio.on("vote_new_game", namespace='/users')
@@ -265,7 +268,7 @@ def vote_take_back():
         if (take_back_votes_count == 0) or (users_count == 0):
             take_back_percentage = ''
         elif take_back_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to take_back
-            msg = 'Are you agree with other users\'s decision to take_back the last move?'
+            msg = 'Are you agree with other users\' decision to take_back the last move?'
             show_modal('take_back', msg) # show a modal dialog on users page to ask them choose Yes or No for take_back method
 
         else:
