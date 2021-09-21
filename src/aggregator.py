@@ -302,7 +302,7 @@ def countdown_take_back_modal(t):
 
     # if timeout
     global take_back_percentage ,max_legal_moves, fen,\
-        take_back_votes_count, take_back_votes, agg_announce, prevent_drag
+        take_back_votes_count, take_back_votes, prevent_drag
     if votes.count('yes') >= 0.5 * len(votes): # if majority of current gathered votes is yes
         agg_announce = True
         emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
@@ -378,7 +378,7 @@ def countdown_new_game_modal(t):
 
     # if timeout
     global new_game_percentage ,max_legal_moves, fen,\
-        new_game_votes_count, new_game_votes, agg_announce, prevent_drag
+        new_game_votes_count, new_game_votes, prevent_drag
     if votes.count('yes') >= 0.5 * len(votes): # if majority of current gathered votes is yes
         agg_announce = True
         emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
