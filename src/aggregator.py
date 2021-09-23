@@ -289,6 +289,7 @@ def countdown_take_back_modal(t):
     countdown_modal_on = True
     agg_announce == True # cancel countdown_aggregation
     print('\nmodal Timer ON')
+    emit('countdown_modal', 30, broadcast=True) # countdown timer for modal pole for 30s
     for _ in range(t):
         if modal_announce == False:
             print('\nmodal Timer aborted')
@@ -359,12 +360,13 @@ def ack_take_back(vote):
 
 
 def countdown_new_game_modal(t):
-    """countdown timer for take_back modal dialog
+    """countdown timer for new_game modal dialog
     """
     global countdown_modal_on, agg_announce
     countdown_modal_on = True
     agg_announce == True # cancel countdown_aggregation
     print('\nmodal Timer ON')
+    emit('countdown_modal', 30, broadcast=True) # countdown timer for modal pole for 30s
     for _ in range(t):
         if modal_announce == False:
             print('\nmodal Timer aborted')

@@ -18,18 +18,31 @@
   <div class="row">
     <div class="col-5">
 
-      <!-- modal -->
+      <!-- modal poll -->
       <div class="modal fade" id="modal_dialog" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-body">
-              <p id="modal_msg">Are you agree?</p>
+              <div class="row">
+
+                <div class="container ">
+                  <p id="modal_msg">Are you agree?</p><br>
+
+                  <div class="progress w-100" style="height: 3px;">
+                    <div id="progress-bar-modal" class="progress-bar" role="progressbar" style="width: 100%"></div>
+                  </div>
+
+                  <span id="countdown-modal" style="color:green; font-weight:bold"></span>
+                </div>
+              </div>
             </div>
-            <div class="modal-footer">
+
+            <div class="modal-footer d-flex justify-content-center">
               <button id="yes" type="button" class="btn btn-success">Yes</button>
               <button id="i_have_no_idea" type="button" class="btn btn-secondary">I have no idea</button>
               <button id="no" type="button" class="btn btn-danger">No</button>
             </div>
+
           </div>
         </div>
       </div>
@@ -228,7 +241,7 @@
     });
     $('#modal_msg').text(msg);
     // on click "Yes" button
-    $('#yes').on('click', function() {
+    $('#yes').off().on('click', function() {
       fn('yes');
       // disable buttons on modal
       $("#yes").attr('disabled', true);
@@ -236,7 +249,7 @@
       $("#no").attr('disabled', true);
     });
     // on click "I have no idea" button (this button is not applicable and is just for storing decision datas)
-    $('#i_have_no_idea').on('click', function() {
+    $('#i_have_no_idea').off().on('click', function() {
       fn('i_have_no_idea');
       // disable buttons on modal
       $("#yes").attr('disabled', true);
@@ -244,7 +257,7 @@
       $("#no").attr('disabled', true);
     });
     // on click "No" button
-    $('#no').on('click', function() {
+    $('#no').off().on('click', function() {
       fn('no');
       // disable buttons on modal
       $("#yes").attr('disabled', true);
@@ -260,6 +273,22 @@
     $("#yes").attr('disabled', false);
     $("#i_have_no_idea").attr('disabled', false);
     $("#no").attr('disabled', false);
+  });
+
+  // countdown timer for modal pole for 30s
+  socket_users.on('countdown_modal', function(t) {
+    var counter = t;
+    var progressTimer = setInterval(function(){
+      $("#progress-bar-modal").width((counter / t) * 100 + "%");
+      $("#countdown-modal").text(counter + 's');
+      if(counter <= 0) {
+        $("#countdown-modal").text('');
+        clearInterval(progressTimer);
+      };
+
+      --counter;
+
+    },1000);
   });
 
   // disable confirm_choice button
