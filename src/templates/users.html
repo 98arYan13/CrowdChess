@@ -29,10 +29,10 @@
                   <p id="modal_msg">Are you agree?</p><br>
 
                   <div class="progress w-100" style="height: 3px;">
-                    <div id="progress-bar-modal" class="progress-bar" role="progressbar" style="width: 100%"></div>
+                    <div id="progress_bar_modal" class="progress-bar" role="progressbar" style="width: 100%"></div>
                   </div>
 
-                  <span id="countdown-modal" style="color:green; font-weight:bold"></span>
+                  <span id="countdown_modal" style="color:green; font-weight:bold"></span>
                 </div>
               </div>
             </div>
@@ -49,6 +49,14 @@
 
       <!-- game status -->
       <strong class="mx-auto"><div id="status" style="width: 400px;"></div></strong>
+
+      <!-- chess time progress-bar -->
+      <div id="chess_time_bar" class="row clearfix ml-1" style="width: 380px;">
+        <span id="countdown_chess" style="width: 1em; color:green; font-weight:bold">∞</span>
+        <div class="progress" style="width: 350px; height: 3px;">
+          <div id="progress_bar_chess" class="progress-bar" role="progressbar" style="width: 100%"></div>
+        </div>
+      </div>
 
       <!-- chess board view -->
       <div id="chess_board" class="row mx-auto mb-2" style="width: 400px; height: 400px;">
@@ -279,16 +287,40 @@
   socket_users.on('countdown_modal', function(t) {
     var counter = t;
     var progressTimer = setInterval(function(){
-      $("#progress-bar-modal").width((counter / t) * 100 + "%");
-      $("#countdown-modal").text(counter + 's');
+      $("#progress_bar_modal").width((counter / t) * 100 + "%");
+      $("#countdown_modal").text(counter + 's');
       if(counter <= 0) {
-        $("#countdown-modal").text('');
+        $("#countdown_modal").text('');
         clearInterval(progressTimer);
       };
 
       --counter;
 
     },1000);
+  });
+
+  // countdown timer for chess for 60s
+  socket_users.on('countdown_chess', function(t) {
+    $('#chess_time_bar').show();
+    var counter = t;
+    var progressTimer = setInterval(function(){
+      $("#progress_bar_chess").width((counter / t) * 100 + "%");
+      $("#countdown_chess").text(counter + 's');
+      if(counter <= 0) {
+      $("#progress_bar_chess").width("100%");
+        $("#countdown_chess").text('∞');
+        $('#chess_time_bar').hide();
+        clearInterval(progressTimer);
+      };
+
+      --counter;
+
+    },1000);
+  });
+
+  // countdown timer for chess for 60s
+  socket_users.on('stop_countdown_chess', function() {
+    $('#chess_time_bar').hide();
   });
 
   // disable confirm_choice button
@@ -312,6 +344,9 @@
     // hide remained recommend_choices from before
     $('#recommend_choices').hide()
 
+    // hide remained chess_time_bar from before
+    $('#chess_time_bar').hide()
+
     for (let i = 1; i <= data.pv_array.length; i++) {
       // pv of every multipv line
       let pvArr = data.pv_array[i-1].split(" ");
@@ -328,7 +363,7 @@
 
     //draw arrow of recommended choice(s)
     // TODO: must be dynamically change amount of these below functions based-on multipv lines (recommended moves number)
-    $('#choice1').on('click', function() {
+    $('#choice1').off().on('click', function() {
       $("#canvas").remove();
       let pvArr = data.pv_array[0].split(" ");
       uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
@@ -341,7 +376,7 @@
       // enable confirm_choice button
       $("#confirm_choice").attr('disabled', false);
     });
-    $('#choice2').on('click', function() {
+    $('#choice2').off().on('click', function() {
       $("#canvas").remove();
       let pvArr = data.pv_array[1].split(" ");
       uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)
@@ -354,7 +389,7 @@
       // enable confirm_choice button
       $("#confirm_choice").attr('disabled', false);
     });
-    $('#choice3').on('click', function() {
+    $('#choice3').off().on('click', function() {
       $("#canvas").remove();
       let pvArr = data.pv_array[2].split(" ");
       uArrow = pvArr[0]; //for user's arrow (recommend arrow to user)

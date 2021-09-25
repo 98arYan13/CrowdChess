@@ -75,16 +75,19 @@ def countdown_aggregation(t):
     global countdown_aggregation_on
     countdown_aggregation_on = True
     print('\nTimer ON')
+    emit('countdown_chess', 60, broadcast=True) # countdown timer for chess for 60s
     for _ in range(t):
         if agg_announce == False:
             time.sleep(1)
         else:
             print('\nTimer aborted')
+            emit('stop_countdown_chess', broadcast=True)
             countdown_aggregation_on = False
             return
 
     countdown_aggregation_on = False
     print('\nTimer OFF')
+    emit('stop_countdown_chess', broadcast=True)
 
     # call aggregaion if timeout
     emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
