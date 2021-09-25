@@ -91,14 +91,14 @@ def countdown_aggregation(t):
     aggregation(moves_list)
     moves_list.clear() # emptying moves list for next aggregation
 
-# Majority vote:
+# Plurality vote:
 def aggregation(moves_list):
     """
     aggregate moves of users
     if moves do not reach the consesus, then show recommend choices to users
     for choose between them.
     NOTE: for variety of aggregations, function can be named to chosen aggregation method.
-    THIS USE MAJORITY VOTE METHOD !
+    THIS USE PLURALITY VOTE METHOD !
     """
     consensus = False
     computer_move = 'xxxx'
@@ -289,7 +289,7 @@ def countdown_take_back_modal(t):
     countdown_modal_on = True
     agg_announce == True # cancel countdown_aggregation
     print('\nmodal Timer ON')
-    emit('countdown_modal', 30, broadcast=True) # countdown timer for modal pole for 30s
+    emit('countdown_modal', 30, broadcast=True) # countdown timer for modal poll for 30s
     for _ in range(t):
         if modal_announce == False:
             print('\nmodal Timer aborted')
@@ -366,7 +366,7 @@ def countdown_new_game_modal(t):
     countdown_modal_on = True
     agg_announce == True # cancel countdown_aggregation
     print('\nmodal Timer ON')
-    emit('countdown_modal', 30, broadcast=True) # countdown timer for modal pole for 30s
+    emit('countdown_modal', 30, broadcast=True) # countdown timer for modal poll for 30s
     for _ in range(t):
         if modal_announce == False:
             print('\nmodal Timer aborted')
