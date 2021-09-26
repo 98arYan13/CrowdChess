@@ -344,9 +344,6 @@
     // hide remained recommend_choices from before
     $('#recommend_choices').hide()
 
-    // hide remained chess_time_bar from before
-    $('#chess_time_bar').hide()
-
     for (let i = 1; i <= data.pv_array.length; i++) {
       // pv of every multipv line
       let pvArr = data.pv_array[i-1].split(" ");
@@ -753,6 +750,9 @@
 
   // update game status
   updateStatus();
-  
+
+  // hide remained chess_time_bar from before
+  $('#chess_time_bar').hide()
+
 </script>
 {% endblock %}
