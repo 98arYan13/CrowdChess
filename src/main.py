@@ -12,10 +12,10 @@ main = Blueprint('main', __name__)
 def index():
     return render_template('users.html')
 
-@main.route('/profile')
+@main.route('/about')
 @login_required
-def profile():
-    return render_template('profile.html', name=current_user.name)
+def about():
+    return render_template('about.html', name=current_user.name)
 
 
 online_users = set() # currently connected users to server
