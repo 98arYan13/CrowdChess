@@ -25,8 +25,14 @@ def create_new_pgn():
     pgn_file_name = config.pgn_file_name
     with open('./datas/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
         game = chess.pgn.Game()
+        game.headers['Date'] = time.strftime("%Y.%m.%d-%H:%M")
+        game.headers['White'] = "Crowd"
+        game.headers['Black'] = "Computer"
         if FEN:
             game.setup(FEN)
+            if not chess.Board(FEN).turn:
+                game.headers['White'] = "Computer"
+                game.headers['Black'] = "Crowd"
         exporter = chess.pgn.FileExporter(pgn)
         game.end().accept(exporter)
 
@@ -87,15 +93,9 @@ def make_move():
     engine = chess.engine.SimpleEngine.popen_uci(
         './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
     
-    # extract fixed depth value
-    fixed_depth = request.form.get('fixed_depth')
+    info = engine.analyse(board, chess.engine.Limit(depth=int(config.DEPTH)))
 
-    # extract move time value
-    move_time = request.form.get('move_time')
-
-    # move_time by default if none
-    if move_time == None:
-        move_time = config.move_time
+    """move_time = config.move_time
 
     # if move time is available
     if move_time != '0':
@@ -110,7 +110,7 @@ def make_move():
                 # search for best move with fixed move time
                 info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
             except:
-                info = {}
+                info = {}"""
     """
     # if fixed depth is available
     if fixed_depth != '0':
