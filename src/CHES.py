@@ -1,10 +1,13 @@
 # chess processes for CrowdChess (ches)
-from flask import request
-from flask.blueprints import Blueprint
+
+
+from flask import Blueprint
+from flask_socketio import emit
 import chess
 import chess.engine
 import chess.pgn
-import io
+import pandas as pd
+from pandas import read_csv
 import time
 import random
 import config
@@ -12,8 +15,68 @@ import config
 
 ches = Blueprint('ches', __name__)
 
-# FEN for start game
-FEN = config.FEN
+
+FEN = config.FEN # FEN for start game
+starttime  = time.strftime('%Y-%m-%d %H:%M:%S') # start of game
+endtime = None # end of game
+game_result = None # last game outcome
+_depth = config.DEPTH # last chess engine depth
+users_color = "White" # default color of the Crowd (users)
+
+
+def read_games_stats():
+    """games stats"""
+
+    global _depth
+
+    try:
+        df_game = read_csv('./datas/all_games_stats.csv')
+    except:
+        # initialize all games stats
+        df_game = pd.DataFrame(columns=[
+            'startime',
+            'endtime',
+            'engine_depth',
+            'result',
+            'users_color'
+            'users_count',
+        ])
+
+        df_game = df_game.append(pd.DataFrame([{
+            'engine_depth': _depth,
+        }]))
+
+        # create xlsx file
+        df_game.to_csv('./datas/all_games_stats.csv', index=False)
+        df_game = read_csv('./datas/all_games_stats.csv')
+
+    _depth = df_game['engine_depth'].iloc[-1]
+
+    return df_game
+
+
+def update_game_stats():
+    """update games stats"""
+
+    from aggregator import users_count
+
+    df_game = read_games_stats()
+    endtime  = time.strftime('%Y-%m-%d %H:%M:%S')
+
+    # current game stats
+    dict_game = {
+        'startime': starttime,
+        'endtime': endtime,
+        'engine_depth': _depth,
+        'result': game_result,
+        'users_color': users_color,
+        'users_count': users_count,
+    }
+
+    df_game = df_game.append(pd.DataFrame([dict_game]))
+    df_game.to_csv('./datas/all_games_stats.csv', index=False)
+
+
 
 # disable take_back button at begining of game
 disable_take_back = True
@@ -21,18 +84,22 @@ disable_take_back = True
 # create a new PGN file
 pgn_file_name = None
 def create_new_pgn():
-    global pgn_file_name
+    global pgn_file_name, users_color
     pgn_file_name = config.pgn_file_name
     with open('./datas/' + pgn_file_name, 'w', encoding="utf-8") as pgn:
         game = chess.pgn.Game()
-        game.headers['Date'] = time.strftime("%Y.%m.%d-%H:%M")
+        game.headers['Date'] = time.strftime("%Y.%m.%d")
         game.headers['White'] = "Crowd"
         game.headers['Black'] = "Computer"
+        users_color = "White"
+
         if FEN:
             game.setup(FEN)
             if not chess.Board(FEN).turn:
                 game.headers['White'] = "Computer"
                 game.headers['Black'] = "Crowd"
+                users_color = "Black"
+
         exporter = chess.pgn.FileExporter(pgn)
         game.end().accept(exporter)
 
@@ -44,6 +111,41 @@ def update_pgn_file(SAN):
         game.end().add_variation(chess.Move.from_uci(SAN))
         exporter = chess.pgn.FileExporter(pgn)
         game.accept(exporter)
+
+    global game_result
+    game_result = None
+
+    board = game.board()
+    for move in game.mainline_moves():
+        board.push(move)
+
+    # if game has an outcome
+    outcome = board.outcome()
+    if outcome:
+        game_result = outcome.result()
+        print(outcome.termination)
+        if outcome.winner == chess.WHITE:
+            if users_color == 'White':
+                emit('game_is_over',
+                    'Congratulations, We WON!\nGet Ready for the Next Round.')
+            else:
+                emit('game_is_over',
+                    'We LOST!\nGet Ready for the Next Round.')
+
+        elif outcome.winner == chess.BLACK:
+            if users_color == 'Black':
+                emit('game_is_over',
+                    'Congratulations, We WON!\nGet Ready for the Next Round.')
+            else:
+                emit('game_is_over',
+                    'We LOST!\nGet Ready for the Next Round.')
+
+        time.sleep(20)
+        new_game()
+
+        from aggregator import update_client_interface
+        update_client_interface()
+
 
 # FEN of current game
 def get_fen():
@@ -66,19 +168,6 @@ def fen_hist(fen):
     print(fen_history)
 
 
-"""# Maximum legal moves for current playable color
-def max_legal_moves():
-    try:
-        # TODO: better to use fen instead of pgn
-        pgn = request.form.get('pgn')
-        game = chess.pgn.read_game(io.StringIO(pgn))
-        board = game.board()
-        for move in game.mainline_moves():
-            board.push(move)
-        return {'max_legal_moves': board.legal_moves.count()}
-    except: # if new game
-        return {'max_legal_moves': '20'}"""
-
 # make move from aggregator
 def make_move():
     # open pgn file
@@ -93,34 +182,8 @@ def make_move():
     engine = chess.engine.SimpleEngine.popen_uci(
         './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
     
-    info = engine.analyse(board, chess.engine.Limit(depth=int(config.DEPTH)))
+    info = engine.analyse(board, chess.engine.Limit(depth=int(_depth)))
 
-    """move_time = config.move_time
-
-    # if move time is available
-    if move_time != '0':
-        if move_time == 'instant':
-            try:
-                # search for best move instantly
-                info = engine.analyse(board, chess.engine.Limit(time=0.1))
-            except:
-                info = {}
-        else:
-            try:
-                # search for best move with fixed move time
-                info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
-            except:
-                info = {}"""
-    """
-    # if fixed depth is available
-    if fixed_depth != '0':
-        try:
-            # search for best move instantly
-            info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
-        except:
-            info = {}
-    """
-    
     # terminate engine process
     engine.quit()
     
@@ -161,8 +224,8 @@ def make_move():
             'score': '#+1',
         }
 
+
 # Recommended moves
-#@ches.route('/recommend_moves', methods=['POST'])
 def recommend_moves():
     # number of multipv lines for recommended moves
     MULTIPV = config.MULTIPV
@@ -178,45 +241,10 @@ def recommend_moves():
     # create chess engine instance
     engine = chess.engine.SimpleEngine.popen_uci(
         './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
-    
-    # extract fixed depth value
-    fixed_depth = request.form.get('fixed_depth')
 
-    # extract move time value
-    move_time = request.form.get('move_time')
-    
-    # move_time by default if none
-    if move_time == None:
-        move_time = config.move_time
+    # search for best move instantly
+    info = engine.analyse(board, chess.engine.Limit(depth=int(_depth)))
 
-    # if move time is available
-    if move_time != '0':
-        if move_time == 'instant':
-            try:
-                # search for best move instantly
-                info = engine.analyse(
-                    board, chess.engine.Limit(time=0.1), multipv=MULTIPV)
-            except:
-                info = {}
-        else:
-            try:
-                # search for best move with fixed move time
-                info = engine.analyse(
-                    board, chess.engine.Limit(time=int(move_time)), multipv=MULTIPV)
-            except:
-                info = {}
-
-    """
-    # if fixed depth is available
-    if fixed_depth != '0':
-        try:
-            # search for best move instantly
-            info = engine.analyse(
-                board, chess.engine.Limit(depth=int(fixed_depth)), multipv=MULTIPV)
-        except:
-            info = {}
-    """
-    
     # terminate engine process
     engine.quit()
     
@@ -247,13 +275,15 @@ def take_back():
 
 
 def new_game():
-    """
-    new game
-    """
-    global fen_history, FEN
+    """new game"""
+
+    global fen_history, FEN, game_result
     fen_history.clear()
     FEN = None
     create_new_pgn() # create a new pgn file with updated name
+
+    #game_result = 'lose'
+    update_game_stats()
 
 
 create_new_pgn() # create a new pgn file with updated filename

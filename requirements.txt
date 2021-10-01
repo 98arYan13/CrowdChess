@@ -4,3 +4,4 @@ flask-login
 flask-socketio
 chess
 eventlet
+pandas

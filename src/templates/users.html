@@ -210,6 +210,10 @@
     $('#collapseAlert').collapse('show');
     $('#alertMessage').text(msg);
   });
+  socket_users.on('game_is_over', function(msg) {
+    $('#collapseAlert').collapse('show');
+    $('#alertMessage').text(msg);
+  });
 
   // if consensus not reached, user must choose from recommend_choice
   socket_users.on('recommend_choice', (data) => {

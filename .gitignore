@@ -5,4 +5,4 @@ test.ipynb
 db.sqlite
 archived_files/
 config.py
-src/datas/
+src/datas/*
