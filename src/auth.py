@@ -8,7 +8,7 @@ from __init__ import db, limiter
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST']) # define login page path
-@limiter.limit("10 per minute", override_defaults=False)
+@limiter.limit("1000 per hour", override_defaults=False)
 def login(): # define login page fucntion
     if request.method=='GET': # if the request is a GET we return the login page
         return render_template('login.html')
