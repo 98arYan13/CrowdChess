@@ -5,3 +5,4 @@ flask-socketio
 chess
 eventlet
 pandas
+flask_limiter

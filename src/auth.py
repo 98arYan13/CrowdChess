@@ -2,12 +2,13 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from flask_login import login_user, logout_user, login_required
-from __init__ import db
+from __init__ import db, limiter
 
 
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST']) # define login page path
+@limiter.limit("10 per minute", override_defaults=False)
 def login(): # define login page fucntion
     if request.method=='GET': # if the request is a GET we return the login page
         return render_template('login.html')
@@ -29,6 +30,7 @@ def login(): # define login page fucntion
         return redirect(url_for('main.about'))
 
 @auth.route('/signup', methods=['GET', 'POST'])# we define the sign up path
+@limiter.limit("20 per minute", override_defaults=False)
 def signup(): # define the sign up function
     if request.method=='GET': # If the request is GET we return the sign up page and forms
         return render_template('signup.html')

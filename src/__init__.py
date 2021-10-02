@@ -3,23 +3,31 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-import config
 from flask_socketio import SocketIO
+from flask_login import LoginManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import config
 
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 
-# socketio
-socketio = SocketIO(engineio_logger=config.engineio_logger, logger=config.logger,
-                    async_mode = 'threading')
+socketio = SocketIO(
+    engineio_logger=config.engineio_logger,
+    logger=config.logger,
+    async_mode = 'threading'
+)
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 def create_app(debug=False):
-    # Construct the core app object
+
     app = Flask(__name__)
 
-    # Application Configuration
     app.config.update(SECRET_KEY=config.SECRET_KEY)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///datas/db.sqlite' # it is the path where the SQLite database file will be saved
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # deactivate Flask-SQLAlchemy track modifications
@@ -27,15 +35,18 @@ def create_app(debug=False):
 
     # Initialize Plugins
     db.init_app(app) # Initialiaze sqlite database
-    login_manager = LoginManager()
+
+    login_manager = LoginManager() # TODO: delete this line
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app) # configure it for login
+
+    limiter.init_app(app) # initialize limiter
 
     from models import User
     @login_manager.user_loader
     def load_user(user_id): #reload user object from the user ID stored in the session
         return User.query.get(int(user_id))
-    
+
     # blueprint for auth routes
     from auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
