@@ -24,14 +24,27 @@ agg_announce = False # aggregation announcement
 modal_announce = False # modal dialog announcement
 recommend_moves_obj = None # availiblity of recommend choices
 last_move_san = None # san of last approved move by server
-active_users = set() # users present on users.html page
-users_count = 0 # number of active users on main page
+active_users = set() # users present on main page
+users_count = 0 # number of users present on main page
 take_back_votes_count = 0 # number of votes to take_back move
 take_back_percentage = '' # percentage of users that want take_back
 new_game_votes_count = 0 # number of votes to new_game
 new_game_percentage = '' # percentage of users that want new_game
 countdown_aggregation_on = False # true if countdown_aggregation() is running
 countdown_modal_on = False # true if countdown_modal() is running
+
+def update_client_interface():
+    global fen, max_legal_moves, take_back_percentage, prevent_drag,\
+        recommend_moves_obj, new_game_percentage
+
+    emit('update_client_interface', {
+        'fen': fen,
+        'max_legal_moves': max_legal_moves,
+        'take_back_percentage': take_back_percentage,
+        'new_game_percentage': new_game_percentage,
+        'prevent_drag': prevent_drag,
+        'recommend_moves_obj': recommend_moves_obj
+    }, broadcast=True)
 
 
 # Using Flask-Login with Flask-SocketIO
@@ -441,9 +454,9 @@ def ack_new_game(vote):
 def show_modal(method, msg):
     """
     show a modal dialog on client side with a question to choose between
-    yes or no.
-    return yes or no if half of users choose any.
-    if in a period of time half of answer is not same, default is no.
+    'yes' or 'no'.
+    return 'yes' or 'no' if half of users choose any.
+    if in a period of time half of answers are not same, default is 'no'.
     """
     if method == 'take_back':
         emit('show_modal', msg, broadcast=True, callback=ack_take_back)

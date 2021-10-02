@@ -277,13 +277,15 @@ def take_back():
 def new_game():
     """new game"""
 
-    global fen_history, FEN, game_result
+    global fen_history, FEN, game_result, starttime
     fen_history.clear()
     FEN = None
+
+    update_game_stats()
+
     create_new_pgn() # create a new pgn file with updated name
 
-    #game_result = 'lose'
-    update_game_stats()
+    starttime  = time.strftime('%Y-%m-%d %H:%M:%S')
 
 
 create_new_pgn() # create a new pgn file with updated filename

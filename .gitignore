@@ -1,6 +1,5 @@
 test.py
 __pycache__/
-.gitignore
 test.ipynb
 db.sqlite
 archived_files/
