@@ -32,7 +32,7 @@
 <section>
 	<div class="container-fluid has-text-centered">
 		<header id="top">
-			<nav class="navbar navbar-expand">
+			<nav class="navbar navbar-expand navbar-light bg-light">
 
 				<!-- online status -->
 				<div class="onlineStatus float-right">
@@ -43,35 +43,47 @@
 					</div>
 				</div>
 
-				<ul class="navbar-nav">
+				<ul class="navbar-nav mr-auto">
 					
-					<a href="{{ url_for('main.index') }}" class="navbar-item">
+					<li class="nav-item active">
+					<a class="nav-link" href="{{ url_for('main.index') }}" class="navbar-item">
 						Home
 					</a>
+					</li>
 					{% if current_user.is_authenticated %}
-					<a href="{{ url_for('main.about') }}" class="navbar-item">
+					<li class="nav-item active">
+						<a class="nav-link" href="{{ url_for('main.about') }}" class="navbar-item">
 						about
 					</a>
+					</li>
 					{% endif %}
 					{% if not current_user.is_authenticated %}
-					<a href="{{ url_for('auth.login') }}" class="navbar-item">
+					<li class="nav-item active">
+						<a class="nav-link" href="{{ url_for('auth.login') }}" class="navbar-item">
 						Login
 					</a>
-					<a href="{{ url_for('auth.signup') }}" class="navbar-item">
+					</li>
+					<li class="nav-item active">
+						<a class="nav-link" href="{{ url_for('auth.signup') }}" class="navbar-item">
 						Sign Up
 					</a>
+					</li>
 					{% endif %}
 					{% if current_user.is_authenticated %}
-					<a href="{{ url_for('auth.logout') }}" class="navbar-item">
+					<li class="nav-item active">
+						<a class="nav-link" href="{{ url_for('auth.logout') }}" class="navbar-item">
 						Logout
 					</a>
+					</li>
 					{% endif %}
 				</ul>
 
 				<!-- connected users -->
-				<div style="font: size 8px;" class="ml-2">Participants<br>
-					<b id="participant_users">n/a</b>
-				</div>
+					<li class="nav-item">
+						<div style="font: size 8px;" class="ml-2">Participants<br>
+							<b id="participant_users">n/a</b>
+						</div>
+					</li>
 
 			</nav>
 
