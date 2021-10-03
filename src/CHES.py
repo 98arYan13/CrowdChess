@@ -243,8 +243,12 @@ def recommend_moves():
         './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
 
     # search for best move instantly
-    info = engine.analyse(board, chess.engine.Limit(depth=int(_depth)))
+    info = engine.analyse(
+        board, chess.engine.Limit(depth=int(_depth)),
+        multipv=MULTIPV
+        )
 
+    print('\n',info,'\n')
     # terminate engine process
     engine.quit()
     
