@@ -63,11 +63,11 @@
       </div>
   
       <!-- game controls -->
-      <div class="row mx-auto mb-2" style="width: 400px;">
+      <div class="row mx-auto border" style="width: 400px;">
 
         <div class="row mx-auto mb-2" style="width: 400px;">
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-          <button id="confirm_choice" style="width: 14%;" type="button" class="btn btn-success mr-2"><i class="fa fa-check btn-icon-prepend"></i></button>
+          <button id="confirm_choice" style="width: 20%;" type="button" class="btn btn-success mr-2"><i class="fa fa-check btn-icon-prepend"></i></button>
           <div style="height: 57; width: 54;"><button id="undo_move" style="font-size:24px;color:green; top: 50%; left: 50%;" class="fa fa-undo"></button></div>
           <!-- choose computer recommend move -->
           <div id="recommend_choices" class="btn-group ml-2">
@@ -100,15 +100,13 @@
     <div class="col mx-auto">
       
       <!-- game info -->
-      <table class="table text-center mt-4" style="font-size: small;">
+      <table class="table text-center border" style="font-size: small;">
         <thead>
           <tr>
             <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
             <th>Score</th>
             <th>Depth</th>
             <th>Time</th>
-            <th>Nodes</th>
-            <th>Knps</th>
           </tr>
         </thead>
         <tbody>
@@ -117,16 +115,14 @@
             <td><strong id="score" class="text-danger"></strong></td>
             <td id="depth"></td>
             <td id="time"></td>
-            <td id="nodes"></td>
-            <td id="knps"></td>
           <tr>
         </tbody>
       </table>
-      <hr>
-      
+
       <!-- PGN output -->
-      <div class="mt-2"><strong>PGN:</strong></div>
-      <div id="pgn"></div>
+      <div class="mt-1 border"><strong>PGN:</strong>
+        <div id="pgn"></div>
+      </div><br>
 
     </div>
   </div>
