@@ -8,6 +8,7 @@ from __init__ import db, limiter
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST']) # define login page path
+@limiter.limit("20 per minute")
 def login(): # define login page fucntion
     if request.method=='GET': # if the request is a GET we return the login page
         return render_template('login.html')
@@ -29,7 +30,7 @@ def login(): # define login page fucntion
         return redirect(url_for('main.about'))
 
 @auth.route('/signup', methods=['GET', 'POST'])# we define the sign up path
-@limiter.limit("20 per minute", override_defaults=False)
+@limiter.limit("20 per minute")
 def signup(): # define the sign up function
     if request.method=='GET': # If the request is GET we return the sign up page and forms
         return render_template('signup.html')
