@@ -5,8 +5,33 @@
   
 {% endblock %}
 {% block content %}
-  <h1>Welcome {{ name }}</h1><br><br>
+
   <a href="{{ url_for('main.index') }}">
-  <button type="button" class="btn-lg btn-primary btn-block">Go to Main Page (Home)</button>
+    <button type="button" class="btn-lg btn-primary btn-block">Go to Main Page (Home)</button>
   </a>
+
+  <h1>Welcome {{ name }}</h1><br><hr>
+
+  <div class="row mx-auto">
+    <div class="col">
+
+      <!-- CrowdChess info -->
+      <p class="h3 mx-auto"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
+
+      <!-- engine info -->
+      <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
+    </div>
+  </div>
+  
+  <hr>
+  
+  <!-- info -->
+  <div class="row mx-auto mt-2">
+    <h4 class="mx-auto">NOTE: !<h4>
+    <small class="mx-auto">
+      <!-- TODO: add note -->
+    </small>
+  </div>
+  <br>
+
 {% endblock %}

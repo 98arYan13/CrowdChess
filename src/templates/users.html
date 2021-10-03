@@ -16,7 +16,7 @@
 {% endblock %}
 {% block content %}
   <div class="row">
-    <div class="col-5">
+    <div class="w-100 p-3">
 
       <!-- modal poll -->
       <div class="modal fade" id="modal_dialog" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -59,7 +59,7 @@
       </div>
 
       <!-- chess board view -->
-      <div id="chess_board" class="row mx-auto mb-2" style="width: 400px; height: 400px;">
+      <div id="chess_board" class="row mw-100 mx-auto mb-2" style="width: 400px; height: 400px;">
       </div>
   
       <!-- game controls -->
@@ -98,26 +98,6 @@
       </div>
     </div>
     <div class="col mx-auto">
-      <div class="row mx-auto">    
-        <div class="col">
-
-          <!-- CrowdChess info -->
-          <p class="h3 mx-auto"><strong>CrowdChess</strong> <small>(Wisdom of Crowd Chess)</small></p>
-
-          <!-- engine info -->
-          <p class="h6 ml-2 mt-3">Engine: <strong>Stockfish 13</strong></p>
-        </div>
-      </div>
-      
-      <hr>
-      
-      <!-- info -->
-      <div class="row mx-auto mt-2">
-        <small class="mx-auto">
-          <!-- TODO: add note -->
-          NOTE: !
-        </small>
-      </div>
       
       <!-- game info -->
       <table class="table text-center mt-4" style="font-size: small;">
@@ -147,12 +127,7 @@
       <!-- PGN output -->
       <div class="mt-2"><strong>PGN:</strong></div>
       <div id="pgn"></div>
-      
-      <!-- download button -->
-      <button id="download_button" class="btn btn-success mt-2">Download</button>
-      
-      <!-- download link -->
-      <a id="download_link" href="" download="" hidden>your pgn</a>
+
     </div>
   </div>
 
