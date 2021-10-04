@@ -17,6 +17,7 @@ aggregator = Blueprint('aggregator', __name__)
 
 
 moves_list = [] # empty moves list
+moves_dict = {} # dictionary of users(keys) and their moves(values)
 votes = [] # list of yes or no votes
 fen, max_legal_moves = get_fen() # fen and Maximum legal moves for current playable color
 prevent_drag = False # announce prevent client board to drag move
@@ -106,6 +107,7 @@ def countdown_aggregation(t):
     emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
     aggregation(moves_list)
     moves_list.clear() # emptying moves list for next aggregation
+    moves_dict.clear()
 
 # Plurality vote:
 def aggregation(moves_list):
@@ -194,14 +196,23 @@ def aggregation(moves_list):
 def move_from_user(move):
     emit('preventDrag', True)
     print(f"\nmove form user {current_user.name}:", move, '\n')
-    global moves_list
-    moves_list.append(move['from'] + move['to'])
+    global moves_list, moves_dict
+
+    try:
+        if moves_dict[current_user.email]: # check double moving
+            pass
+
+    except:
+        moves_list.append(move['from'] + move['to'])
+
+    moves_dict[current_user.email] = move['from'] + move['to']
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     print('active_users length: ', len(active_users))
 
     if len(moves_list) >= len(active_users): # call aggregation if all active users do their move
         aggregation(moves_list)
         moves_list.clear() # emptying moves list for next aggregation
+        moves_dict.clear()
 
     elif len(moves_list) >= len(active_users) * 0.5 and not countdown_aggregation_on: # if half of active users do their move
         countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
@@ -211,13 +222,22 @@ def move_from_user(move):
 @login_required
 def choice_from_user(choice):
     print(f"\nmove form user {current_user.name}:", choice, '\n')
-    global moves_list
-    moves_list.append(choice['uArrow'] + choice['oArrow']) # stringify uArrow and oArrow for simplicity of counter list
+    global moves_list, moves_dict
+
+    try:
+        if moves_dict[current_user.email]: # check double moving
+            pass
+
+    except:
+        moves_list.append(choice['uArrow'] + choice['oArrow']) # stringify uArrow and oArrow for simplicity of counter list
+
+    moves_dict[current_user.email] = choice['uArrow'] + choice['oArrow']
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     if len(moves_list) >= len(active_users): # call aggregation when all active users do their move
         emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
         aggregation(moves_list)
         moves_list.clear() # emptying moves list for next aggregation
+        moves_dict.clear()
 
     elif len(moves_list) >= len(active_users) * 0.5 and not countdown_aggregation_on: # if half of active users do their move
         countdown_aggregation(60) # wait for other users' move for 60 second, then call aggregation
