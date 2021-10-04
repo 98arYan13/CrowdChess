@@ -48,27 +48,27 @@
       </div>
 
       <!-- game status -->
-      <strong class="mx-auto"><div id="status" style="width: 400px;"></div></strong>
+      <strong class="mx-auto"><div id="status"></div></strong>
 
       <!-- chess time progress-bar -->
-      <div id="chess_time_bar" class="row clearfix ml-1" style="width: 380px;">
+      <div id="chess_time_bar" class="row clearfix ml-1" style="width: 100%">
         <span id="countdown_chess" style="width: 1em; color:green; font-weight:bold">∞</span>
-        <div class="progress" style="width: 350px; height: 3px;">
+        <div class="progress" style="width: 95%; height: 3px;">
           <div id="progress_bar_chess" class="progress-bar" role="progressbar" style="width: 100%"></div>
         </div>
       </div>
 
       <!-- chess board view -->
-      <div id="chess_board" class="row mw-100 mx-auto mb-2" style="width: 100%">
+      <div id="chess_board" class="row mw-100 mx-auto mb-2" style="width: 100vmin">
       </div>
   
       <!-- game controls -->
       <div class="col mx-auto border">
 
-        <div class="row mx-auto mb-2">
+        <div class="row mx-auto mt-2 mb-2">
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-          <button id="confirm_choice" style="width: 20%;" type="button" class="btn btn-success mr-2"><i class="fa fa-check btn-icon-prepend"></i></button>
-          <div style="height: 57; width: 54;"><button id="undo_move" style="font-size:24px;color:green; top: 50%; left: 50%;" class="fa fa-undo"></button></div>
+          <button id="confirm_choice" style="width: 15%; font-size: 5vw; height: 15vw;" type="button" class="btn btn-success mr-2"><i class="fa fa-check btn-icon-prepend"></i></button>
+          <div><button id="undo_move" style="width: 10vw; font-size: 5vw; color:green; border-radius:10%;" class="h-100 fa fa-undo"></button></div>
           <!-- choose computer recommend move -->
           <div id="recommend_choices" class="btn-group ml-2">
             <div id="choices"></div>
@@ -78,16 +78,16 @@
 
         <!-- control buttons -->
         <div class="btn-group">
-          <button id="new_game" class="btn btn-outline-secondary new_game">New game<span id="new_game_badge" class="badge badge-light"></span></button>
-          <button id="take_back" class="btn btn-outline-secondary take_back">Take back<span id="take_back_badge" class="badge badge-light"></span></button>
-          <button id="flip_board" class="btn btn-outline-secondary">Flip board</button>
+          <button id="new_game" style="font-size: 5vmin;" class="btn btn-outline-secondary new_game">New game<span id="new_game_badge" class="badge badge-light"></span></button>
+          <button id="take_back" style="font-size: 5vmin;" class="btn btn-outline-secondary take_back">Take back<span id="take_back_badge" class="badge badge-light"></span></button>
+          <button id="flip_board" style="font-size: 5vmin;" class="btn btn-outline-secondary">Flip board</button>
         </div>
         <hr>
 
         <!-- FEN -->
-        <nav class="navbar navbar-expand border" style="width: 400px;">
-          <div class="input-group-sm mx-auto mb-2" style="width: 400px;">FEN:
-            <input id="fen" type="text" class="form-control float-left" style="font-size: 12px;" readonly>
+        <nav class="navbar navbar-expand border" style="width: 100%;">
+          <div class="input-group-sm mx-auto mb-2" style="width: 100%;">FEN:
+            <input id="fen" type="text" class="form-control float-left" style="font-size: 0.75rem;" readonly>
             <!-- The button used to copy the FEN -->
             <div class="input-group-append">
               <button id="copy_fen" class="btn btn-info float-right">Copy FEN</button>
@@ -121,7 +121,7 @@
 
       <!-- PGN output -->
       <div class="mt-1 border"><strong>PGN:</strong>
-        <div id="pgn"></div>
+        <div id="pgn" style="font-size: 0.75rem;"></div>
       </div><br>
 
     </div>
