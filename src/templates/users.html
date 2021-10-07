@@ -38,9 +38,9 @@
             </div>
 
             <div class="modal-footer d-flex justify-content-center">
-              <button id="yes" type="button" class="btn btn-success">Yes</button>
-              <button id="i_have_no_idea" type="button" class="btn btn-secondary">I have no idea</button>
-              <button id="no" type="button" class="btn btn-danger">No</button>
+              <button id="yes" type="button" class="btn btn-success">{{ yes }}</button>
+              <button id="i_have_no_idea" type="button" class="btn btn-secondary">{{ I_have_no_idea }}</button>
+              <button id="no" type="button" class="btn btn-danger">{{ no }}</button>
             </div>
 
           </div>
@@ -78,9 +78,9 @@
 
         <!-- control buttons -->
         <div class="btn-group">
-          <button id="new_game" style="font-size: 5vmin;" class="btn btn-outline-secondary new_game">New game<span id="new_game_badge" class="badge badge-light"></span></button>
-          <button id="take_back" style="font-size: 5vmin;" class="btn btn-outline-secondary take_back">Take back<span id="take_back_badge" class="badge badge-light"></span></button>
-          <button id="flip_board" style="font-size: 5vmin;" class="btn btn-outline-secondary">Flip board</button>
+          <button id="new_game" style="font-size: 5vmin;" class="btn btn-outline-secondary new_game">{{ new_game }}<span id="new_game_badge" class="badge badge-light"></span></button>
+          <button id="take_back" style="font-size: 5vmin;" class="btn btn-outline-secondary take_back">{{ take_back }}<span id="take_back_badge" class="badge badge-light"></span></button>
+          <button id="flip_board" style="font-size: 5vmin;" class="btn btn-outline-secondary">{{ flip_board }}</button>
         </div>
         <hr>
 
@@ -103,10 +103,10 @@
       <table class="table text-center border" style="font-size: small;">
         <thead>
           <tr>
-            <th>Max Legal Moves</th> <!-- show maximum legal moves for next color -->
-            <th>Score</th>
-            <th>Depth</th>
-            <th>Time</th>
+            <th>{{ max_legal_moves }}</th> <!-- show maximum legal moves for next color -->
+            <th>{{ score }}</th>
+            <th>{{ depth }}</th>
+            <th>{{ time }}</th>
           </tr>
         </thead>
         <tbody>
@@ -472,54 +472,6 @@
     alert("Copied the text: " + copyText.value);
   });
   
-  // handle download button click
-  $('#download_button').on('click', function() {
-    // init date
-    var date = new Date();
-    
-    // PGN header
-    var pgn_header = '';
-    
-    // get user name
-    var user_name = prompt('What is your name?');
-    
-    // get user color
-    var user_color = prompt('What color did you play with? (please type "White" or "Black")');
-    
-    // if user color is white
-    if (user_color == 'White')
-    {
-      // init PGN header
-      pgn_header = '[White "' + user_name + '"]\n[Black "Stockfish"]\n\n';
-      
-      // init PGN filename
-      $('#download_link').attr('download', user_name + '_vs_Stockfish_' + date.toString().replace(/\s/g, "_") + '.pgn');
-    }
-    // if user color is black
-    else if (user_color == 'Black')
-    {
-      // init PGN header
-      pgn_header = '[White "Stockfish 1.2"]\n[Black "' + user_name + '"]\n\n';
-      
-      // init PGN filename
-      $('#download_link').attr('download', 'Stockfish_vs_' + user_name + '_' + date.toString().replace(/\s/g, "_") + '.pgn');
-    }
-    // otherwise it's error
-    else
-    {
-      alert('Color is illegal, please type "White" or "Black"');
-      return; 
-    }
-    
-    // init download link
-    $('#download_link').attr('href', window.URL.createObjectURL(
-      new Blob([pgn_header + game.pgn()], {type: 'text'})
-    ));
-    
-    // mimic download link click
-    $('#download_link')[0].click();
-  });
-
   // handle Recommend Moves button click
   $('#recommend_moves').on('click', function() {
     // show recommend move(s)
@@ -662,10 +614,10 @@
     }
 
     var status = ''
-    var moveColor = 'White'
+    var moveColor = "{{ white }}"
     var checkedKing = {type: "k", color: "w"};
     if (game.turn() === 'b') {
-      moveColor = 'Black'
+      moveColor = "{{ black }}"
       checkedKing = {type: "k", color: "b"};
     }
 
@@ -673,7 +625,7 @@
 
     // checkmate?
     if (game.in_checkmate()) {
-      status = 'Game over, ' + moveColor + ' is in checkmate.'
+      status = "{{ game_over }}" + moveColor + "{{ is_in_checkmate }}"
       // get position of checkmated king
       var checkedKingPosition = get_piece_positions(game, checkedKing)
       $board.find('.square-' + checkedKingPosition[0]).addClass('highlight-red')
@@ -681,16 +633,16 @@
 
     // draw?
     else if (game.in_draw()) {
-      status = 'Game over, drawn position'
+      status = "{{ game_over_drawn_position }}"
     }
 
     // game still on
     else {
-      status = moveColor + ' to move'
+      status = moveColor + "{{ to_move }}"
 
       // check?
       if (game.in_check()) {
-        status += ', ' + moveColor + ' is in check'
+        status += ', ' + moveColor + "{{ is_in_check }}"
         // get position of checked king
         var checkedKingPosition = get_piece_positions(game, checkedKing)
         $board.find('.square-' + checkedKingPosition[0]).addClass('highlight-red')

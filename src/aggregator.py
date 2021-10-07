@@ -7,7 +7,7 @@ from collections import Counter
 from flask import Blueprint
 from flask_login import current_user, login_required
 from flask_socketio import emit, disconnect
-from __init__ import socketio
+from __init__ import socketio, language
 from ches import (recommend_moves, get_fen, make_move, update_pgn_file,
     take_back, new_game, fen_history)
 
@@ -183,7 +183,11 @@ def aggregation(moves_list):
         else:
             emit('update_client_interface', {'fen':fen,
             'max_legal_moves':max_legal_moves}, broadcast=True) # force client to move "computer_move"
-        emit('consensus_not_reached', 'Consenus NOT reached! Please choose between recommended choices.', broadcast=True)
+        emit(
+            'consensus_not_reached',
+            language["consensus_not_reached"],
+            broadcast=True
+        )
         recommend_moves_obj = recommend_moves()
         emit('recommend_choice', recommend_moves_obj, broadcast=True)
 
@@ -269,7 +273,7 @@ def vote_new_game():
         if (new_game_votes_count == 0) or (users_count == 0):
             new_game_percentage = ''
         elif new_game_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to new_game
-            msg = 'Are you agree with other users\' decision to new_game?'
+            msg = language["are_you_agree_new_game"]
             show_modal('new_game', msg) # show a modal dialog on users page to ask them choose Yes or No for new_game method
 
         else:
@@ -307,7 +311,7 @@ def vote_take_back():
         if (take_back_votes_count == 0) or (users_count == 0):
             take_back_percentage = ''
         elif take_back_votes_count / users_count >= (1/2) : # if more than 1/2 of users vote to take_back
-            msg = 'Are you agree with other users\' decision to take_back the last move?'
+            msg = language["are_you_agree_take_back"]
             show_modal('take_back', msg) # show a modal dialog on users page to ask them choose Yes or No for take_back method
 
         else:

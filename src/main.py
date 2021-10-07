@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from flask_socketio import emit
-from __init__ import create_app, socketio
+from __init__ import create_app, socketio, language
 
 
 # main blueprint
@@ -10,12 +10,12 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @login_required
 def index():
-    return render_template('users.html')
+    return render_template('users.html', **language)
 
 @main.route('/about')
 @login_required
 def about():
-    return render_template('about.html', name=current_user.name)
+    return render_template('about.html', **language, name=current_user.name)
 
 
 online_users = set() # currently connected users to server

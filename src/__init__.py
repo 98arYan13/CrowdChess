@@ -8,6 +8,15 @@ from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import config
+import json
+
+
+default_language = config.app_default_language
+
+# load defualt language json file
+with open("./language/" + default_language + ".json", 'r',
+    encoding='utf8') as file:
+        language = json.loads(file.read())
 
 
 db = SQLAlchemy()

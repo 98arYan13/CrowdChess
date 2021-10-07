@@ -47,32 +47,32 @@
 					
 					<li class="nav-item active">
 					<a class="nav-link" href="{{ url_for('main.index') }}" class="navbar-item">
-						Home
+						{{ home }}
 					</a>
 					</li>
 					{% if current_user.is_authenticated %}
 					<li class="nav-item active">
 						<a class="nav-link" href="{{ url_for('main.about') }}" class="navbar-item">
-						about
+						{{ about }}
 					</a>
 					</li>
 					{% endif %}
 					{% if not current_user.is_authenticated %}
 					<li class="nav-item active">
 						<a class="nav-link" href="{{ url_for('auth.login') }}" class="navbar-item">
-						Login
+						{{ login }}
 					</a>
 					</li>
 					<li class="nav-item active">
 						<a class="nav-link" href="{{ url_for('auth.signup') }}" class="navbar-item">
-						Sign Up
+						{{ sign_up }}
 					</a>
 					</li>
 					{% endif %}
 					{% if current_user.is_authenticated %}
 					<li class="nav-item active">
 						<a class="nav-link" href="{{ url_for('auth.logout') }}" class="navbar-item">
-						Logout
+						{{ logout }}
 					</a>
 					</li>
 					{% endif %}
@@ -80,7 +80,7 @@
 
 				<!-- connected users -->
 				<div style="font: size 8px;" class="ml-2">
-					<b>Participants</b><br>
+					<b>{{ Participants }}</b><br>
 					<p id="participant_users" class="text-center">n/a</p>
 				</div>
 
