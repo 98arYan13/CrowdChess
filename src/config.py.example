@@ -1,11 +1,11 @@
-# this is for admin login
-# change secret_key & password
+# change password
 import os
 
 
+# this is for admin login
 USERNAME = 'admin'
 PASS = 'password'
-SECRET_KEY = "top secret"
+SECRET_KEY = os.urandom(16)
 
 DEBUG = False
 
@@ -16,13 +16,19 @@ logger = False
 # default move_time (seconds)
 move_time = '1'
 
+# defult engine depth
+DEPTH = 10
+
 # set number of multipv lines for recommended moves
 MULTIPV = 3
 
-# initial FEN
-FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+# initial FEN (optional)
+FEN = 'rnbqkbnr/pppp1ppp/8/7Q/3pP3/8/PPP2PPP/RNB1KBNR b KQkq - 1 3'
 
-aggregation_method = "Mojority_vote"
+aggregation_method = "Plurality_vote"
 
-#pgn_file_name = config.aggregation_method + '-' + time.strftime("%Y_%m_%d-%H_%M") + '.pgn'
+#pgn_file_name = config.aggregation_method + '__' + time.strftime("%Y-%m-%d_%H-%M") + '.pgn'
 pgn_file_name = 'test.pgn'
+
+# default language is Farsi (Persian). for English, set value to 'en'
+app_default_language = 'fa'
