@@ -2,7 +2,14 @@
 {% block title %}Welcome, {{ name }}!{% endblock %}
 {% block head %}
   {{ super() }}
-  
+  <style>
+    body {
+      background-image: url('./static/img/pawns_crown.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;  
+      background-size: cover;
+    }
+  </style>
 {% endblock %}
 {% block content %}
 
