@@ -24,11 +24,16 @@
 	<!--socket.io-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js"></script>
 	<script src="{{ url_for('static', filename='js/socketio.js') }}"></script>
+
+	<!-- Farsi font -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic&display=swap" rel="stylesheet">
 	
 	{% endblock %}
 </head>
 
-<body>
+<body style="font-family: 'Noto Sans Arabic', sans-serif;">
 <section>
 	<div class="container-fluid has-text-centered">
 		<header id="top">
