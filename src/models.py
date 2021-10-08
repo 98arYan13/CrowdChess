@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
         nullable=False,
         unique=False
     )
-    email = db.Column(
+    email_phone = db.Column(
         db.String(40),
         unique=True,
         nullable=False

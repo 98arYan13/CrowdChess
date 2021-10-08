@@ -62,7 +62,7 @@ def authenticated_only(f):
 @login_required
 def on_connect(auth):
     global users_count, active_users
-    active_users.add(current_user.email)
+    active_users.add(current_user.email_phone)
     users_count = len(active_users)
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
     emit('update_client_interface', {
@@ -77,7 +77,7 @@ def on_connect(auth):
 @login_required
 def test_disconnect():
     global users_count, active_users
-    active_users.remove(current_user.email)
+    active_users.remove(current_user.email_phone)
     users_count = len(active_users)
     emit('on_main_page_users', {'users_count' : users_count}, broadcast=True)
     print(f'\nuser {current_user.name} leaved the main page\n')
@@ -203,13 +203,13 @@ def move_from_user(move):
     global moves_list, moves_dict
 
     try:
-        if moves_dict[current_user.email]: # check double moving
+        if moves_dict[current_user.email_phone]: # check double moving
             pass
 
     except:
         moves_list.append(move['from'] + move['to'])
 
-    moves_dict[current_user.email] = move['from'] + move['to']
+    moves_dict[current_user.email_phone] = move['from'] + move['to']
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     print('active_users length: ', len(active_users))
 
@@ -229,13 +229,13 @@ def choice_from_user(choice):
     global moves_list, moves_dict
 
     try:
-        if moves_dict[current_user.email]: # check double moving
+        if moves_dict[current_user.email_phone]: # check double moving
             pass
 
     except:
         moves_list.append(choice['uArrow'] + choice['oArrow']) # stringify uArrow and oArrow for simplicity of counter list
 
-    moves_dict[current_user.email] = choice['uArrow'] + choice['oArrow']
+    moves_dict[current_user.email_phone] = choice['uArrow'] + choice['oArrow']
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
     if len(moves_list) >= len(active_users): # call aggregation when all active users do their move
         emit('remove_recommend_choice', broadcast=True) # remove recommend_choice if any client has it
@@ -263,10 +263,10 @@ def vote_new_game():
     global new_game_percentage ,max_legal_moves, fen,\
         new_game_votes_count, new_game_votes
     if len(fen_history) >= 3: # for new_game it must at least 3 fen exist (1 remain with 2 move pop)
-        if current_user.email not in new_game_votes: # if user pushed new_game button
-            new_game_votes.add(current_user.email)
+        if current_user.email_phone not in new_game_votes: # if user pushed new_game button
+            new_game_votes.add(current_user.email_phone)
         else:                                         # if user pushed new_game button again
-            new_game_votes.remove(current_user.email)
+            new_game_votes.remove(current_user.email_phone)
 
         print('\nnew_game_votes :', new_game_votes)
         new_game_votes_count = len(new_game_votes)
@@ -301,10 +301,10 @@ def vote_take_back():
     global take_back_percentage ,max_legal_moves, fen,\
         take_back_votes_count, take_back_votes
     if len(fen_history) >= 3: # for take_back it must at least 3 fen exist (1 remain with 2 move pop)
-        if current_user.email not in take_back_votes: # if user pushed take_back button
-            take_back_votes.add(current_user.email)
+        if current_user.email_phone not in take_back_votes: # if user pushed take_back button
+            take_back_votes.add(current_user.email_phone)
         else:                                         # if user pushed take_back button again
-            take_back_votes.remove(current_user.email)
+            take_back_votes.remove(current_user.email_phone)
 
         print('\ntake_back_votes :', take_back_votes)
         take_back_votes_count = len(take_back_votes)
