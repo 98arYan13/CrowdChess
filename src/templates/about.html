@@ -15,10 +15,10 @@
 {% block content %}
 
   <a href="{{ url_for('main.index') }}">
-    <button type="button" class="btn-lg btn-primary btn-block">Go to Main Page (Home)</button>
+    <button type="button" class="btn-lg btn-primary btn-block">{{ go_to_main_page }}</button>
   </a>
 
-  <h1>Welcome {{ name }}</h1><br><hr>
+  <h1>{{ welcome }} {{ name }}</h1><br><hr>
 
   <div class="row mx-auto">
     <div class="col">
@@ -40,9 +40,6 @@
       <!-- TODO: add note -->
     </small>
   </div>
-  <br>
-  <br>
-  <br>
   <br>
   <br>
   <br>
