@@ -1,6 +1,7 @@
 # Initialize app
 
 
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
@@ -9,6 +10,14 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import config
 import json
+
+
+# creating "datas" folder if there isn't any
+try:
+    os.mkdir("./datas")
+except OSError as e:
+    print(e)
+    pass
 
 
 default_language = config.app_default_language
