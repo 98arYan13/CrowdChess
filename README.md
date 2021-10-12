@@ -22,4 +22,8 @@ mv config.py.sample config.py
 Edit `config.py`. Create a secret key for managing sessions.
 
 ## Running
+
 ```py main.py```
+
+## Design
+This web app designed for mobile devices
