@@ -83,6 +83,3 @@ def create_app(debug=False):
     socketio.init_app(app)
 
     return app
-
-
-db.create_all(app=create_app()) # create the SQLite database

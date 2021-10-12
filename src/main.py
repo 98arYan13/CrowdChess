@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from flask_socketio import emit
-from __init__ import create_app, socketio, language
+from __init__ import create_app, socketio, language, db
 
 
 # main blueprint
@@ -35,6 +35,7 @@ def test_disconnect():
     #print('Client disconnected: ', current_user.name)
 
 
-app = create_app(debug=True) # initialize flask app using the __init__.py function
 if __name__ == '__main__':
+    app = create_app(debug=True) # initialize flask app using the __init__.py function
+    db.create_all(app=app)
     socketio.run(app)
