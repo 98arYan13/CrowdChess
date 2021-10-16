@@ -1,3 +1,7 @@
+#from gevent import monkey
+#monkey.patch_all()
+
+
 # Initialize app
 
 
@@ -37,9 +41,7 @@ socketio = SocketIO(
     async_mode = 'threading'
 )
 
-limiter = Limiter(
-    key_func=get_remote_address,
-)
+limiter = Limiter(key_func=get_remote_address)
 
 def create_app(debug=False):
 

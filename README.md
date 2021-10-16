@@ -1,5 +1,5 @@
 # CrowdChess
-This is crowdchess project.
+### This is crowdchess project.
 
 ## Sources used:
 https://hackersandslackers.com/flask-login-user-authentication/
