@@ -180,7 +180,7 @@ def make_move():
 
     # create chess engine instance
     engine = chess.engine.SimpleEngine.popen_uci(
-        './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
+        './engine/stockfish_14_x64')
     
     info = engine.analyse(board, chess.engine.Limit(depth=int(_depth)))
 
@@ -240,7 +240,7 @@ def recommend_moves():
         
     # create chess engine instance
     engine = chess.engine.SimpleEngine.popen_uci(
-        './engine/stockfish_13/stockfish_13_win_x64_bmi2.exe')
+        './engine/stockfish_14_x64')
 
     # search for best move instantly
     info = engine.analyse(
