@@ -1,6 +1,5 @@
 $(document).ready(function(){
     var socket = io.connect('http://' + document.domain + ':' + location.port);
-    var socket_messages = io('http://' + document.domain + ':' + location.port + '/messages')
 
     // online status, show entire webpage
     socket.on('connected users', function(msg) {
