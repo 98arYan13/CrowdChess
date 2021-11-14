@@ -130,7 +130,7 @@
 <script>
 
   // online status of home page
-  var socket_users = io('http://' + document.domain + ':' + location.port + '/users') // users connected
+  var socket_users = io(window.location.protocol + '//' + document.domain + ':' + location.port + '/users') // users connected
   socket_users.on('connect', () => {
     $(".status-circle").css("background-color", "#90EE90"); // light green
   });
