@@ -4,6 +4,7 @@ db.sqlite
 archived_files/
 config.py
 src/datas/*
+venv/
 
 
 # Byte-compiled / optimized / DLL files
