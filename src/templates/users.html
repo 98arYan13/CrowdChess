@@ -399,30 +399,6 @@
 
   }
 
-  // make computer move
-  /*function make_move(data) {
-    // disable take back button
-    $('#take_back').attr('disabled', true);
-
-    // load fen into the current board state
-    game.move(data.best_move, { sloppy: true })
-
-    // update board position
-    board.position(game.fen());
-
-    // update game info
-    $score.text(data.score);
-    $depth.text(data.depth);
-    $time.text(data.time);
-    $nodes.text(data.nodes);
-    $knps.text(Math.round(Number($nodes.text()) / parseFloat($time.text())) / 1000)
-
-    // update game status
-    updateStatus();
-    
-    // re-enable take back button
-    $('#take_back').attr('disabled', false);
-  }*/
 
   // handle new game button click
   $('#new_game').on('click', function() {
@@ -555,6 +531,7 @@
       // disable confirm_choice button
       $("#confirm_choice").attr('disabled', true);
       // send move to aggregator
+      console.log("move:" , move)
       socket_users.emit('move_from_user', move);
       //globalThis.preventDrag = true;
     });

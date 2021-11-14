@@ -139,13 +139,19 @@ def aggregation(moves_list):
         new_game_votes.clear() # when consensus reached, all secondary votes must be ignored
         recommend_moves_obj = None
         print('\nconsensus reached\n')
-        if len(consensus_move) > 4: # when recommend choice
-            computer_move = consensus_move[4:]
+
+        if len(consensus_move) > 8: # when recommend choice
+            computer_move = consensus_move[5:]
+
+        if consensus_move[4] == 'x':
             consensus_move = consensus_move[0:4]
+        else:
+            consensus_move = consensus_move[0:5]
+
         # update pgn file with given legall san
         update_pgn_file(consensus_move)
         global fen, max_legal_moves, last_move_san
-        last_move_san = consensus_move
+        last_move_san = consensus_move[0:4]
         fen, max_legal_moves = get_fen() # FEN of current game
         last_move_from, last_move_to = last_move_san[0:2], last_move_san[2:]
         emit('update_client_interface', {
@@ -207,7 +213,10 @@ def move_from_user(move):
             pass
 
     except:
-        moves_list.append(move['from'] + move['to'])
+        try: # check if there is pawn promotion to queen (to queen promotion is default)
+            moves_list.append(move['from'] + move['to'] + move['promotion'])
+        except:
+            moves_list.append(move['from'] + move['to'] + 'x')
 
     moves_dict[current_user.email_phone] = move['from'] + move['to']
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
@@ -232,8 +241,11 @@ def choice_from_user(choice):
         if moves_dict[current_user.email_phone]: # check double moving
             pass
 
-    except:
-        moves_list.append(choice['uArrow'] + choice['oArrow']) # stringify uArrow and oArrow for simplicity of counter list
+    except: # stringify uArrow and oArrow for simplicity of counter list
+        if len(choice['uArrow']) == 4:
+            moves_list.append(choice['uArrow'] + 'x' + choice['oArrow'])
+        else: # if there is pawn promotion to queen
+            moves_list.append(choice['uArrow'] + choice['oArrow'])
 
     moves_dict[current_user.email_phone] = choice['uArrow'] + choice['oArrow']
     print('moves_list=', moves_list, '    moves_list length: ', len(moves_list))
