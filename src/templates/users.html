@@ -129,6 +129,10 @@
 
 <script>
 
+  // global variables
+  var $stop_countdown_chess = false; // countdown timer valiadator
+  var $stop_countdown_modal = false; // countdown timer valiadator for modal
+
   // online status of home page
   var socket_users = io(window.location.protocol + '//' + document.domain + ':' + location.port + '/users') // users connected
   socket_users.on('connect', () => {
@@ -256,10 +260,12 @@
     $("#yes").attr('disabled', false);
     $("#i_have_no_idea").attr('disabled', false);
     $("#no").attr('disabled', false);
+    $stop_countdown_modal = true; // set countdown timer to zero for stop previous timer
   });
 
   // countdown timer for modal poll for 30s
   socket_users.on('countdown_modal', function(t) {
+    $stop_countdown_modal = false; // allow to start modal countdown timer
     var counter = t;
     var progressTimer = setInterval(function(){
       $("#progress_bar_modal").width((counter / t) * 100 + "%");
@@ -269,13 +275,18 @@
         clearInterval(progressTimer);
       };
 
-      --counter;
+      if ($stop_countdown_modal == true){
+        counter = 0;
+      } else {
+        --counter;
+      }
 
     },1000);
   });
 
   // countdown timer for chess for 60s
   socket_users.on('countdown_chess', function(t) {
+    $stop_countdown_chess = false; // allow to start countdown timer
     $('#chess_time_bar').show();
     var counter = t;
     var progressTimer = setInterval(function(){
@@ -288,7 +299,11 @@
         clearInterval(progressTimer);
       };
 
-      --counter;
+      if ($stop_countdown_chess == true){
+        counter = 0;
+      } else {
+        --counter;
+      }
 
     },1000);
   });
@@ -296,6 +311,7 @@
   // countdown timer for chess for 60s
   socket_users.on('stop_countdown_chess', function() {
     $('#chess_time_bar').hide();
+    $stop_countdown_chess = true; // set countdown timer to zero for stop previous timer
   });
 
   // disable confirm_choice button
