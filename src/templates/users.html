@@ -167,8 +167,17 @@
     board.position(data.fen);
     // highlight color's move
     removeHighlights($gameTurn)
-    $board.find('.square-' + data.last_move_from).addClass('highlight-' + $gameTurn)
-    $board.find('.square-' + data.last_move_to).addClass('highlight-' + $gameTurn)
+    if(data.fen !== "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {
+      $board.find('.square-' + data.last_move_from).addClass('highlight-' + $gameTurn)
+      $board.find('.square-' + data.last_move_to).addClass('highlight-' + $gameTurn)
+    } else {
+      if ($gameTurn === "w"){
+        removeHighlights("b")
+      } else {
+        removeHighlights("w")
+      }
+    }
+
     // update game status
     updateStatus();
     $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color

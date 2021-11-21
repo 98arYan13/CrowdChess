@@ -38,6 +38,7 @@ def update_client_interface():
     global fen, max_legal_moves, take_back_percentage, prevent_drag,\
         recommend_moves_obj, new_game_percentage
 
+    fen, max_legal_moves = get_fen() # FEN of current game
     emit('update_client_interface', {
         'fen': fen,
         'max_legal_moves': max_legal_moves,

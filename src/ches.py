@@ -140,11 +140,10 @@ def update_pgn_file(SAN):
                 emit('game_is_over',
                     'We LOST!\nGet Ready for the Next Round.')
 
-        time.sleep(20)
-        new_game()
-
         from aggregator import update_client_interface
         update_client_interface()
+        time.sleep(20)
+        new_game()
 
 
 # FEN of current game
