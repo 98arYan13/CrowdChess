@@ -76,6 +76,15 @@
           <hr>
         </div>
 
+
+        <!-- weight/influence of user choice (user's confidence) -->
+        <div class="row mx-auto mt-2 mb-2">
+          <label for="confidence" style="font-size: 5vmin;">Confidence</label>
+          <input type="range" class="form-range ml-2 mr-2" id="confidence" value="1" min='1' max='5' oninput="this.nextElementSibling.value = this.value">
+          <output style="font-size: 5vmin;">1</output>
+        </div>
+
+
         <!-- control buttons -->
         <div class="btn-group">
           <button id="new_game" style="font-size: 5vmin;" class="btn btn-outline-secondary new_game">{{ new_game }}<span id="new_game_badge" class="badge badge-light"></span></button>

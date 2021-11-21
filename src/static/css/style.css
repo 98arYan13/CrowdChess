@@ -61,3 +61,75 @@ position: absolute;
     50% { background-color: #FFFFFF; box-shadow: 0 0 40px #FFFFFF; }
     100% { background-color: #FFFF00; box-shadow: 0 0 3px #FFFF00; }
 }
+
+
+/* range slider */
+input[type="range"] { 
+    margin: auto;
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    height: 2.2rem;
+    width: 50%;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+::-webkit-slider-runnable-track {
+    background: #ddd;
+}
+
+::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.7rem;
+    height: 2.2rem;
+    background: #fff;
+    box-shadow: -100vw 0 0 100vw dodgerblue;
+    border: 2px solid #999;
+}
+
+::-moz-range-track {
+    height: 2.2rem;
+    background: #ddd;
+}
+
+::-moz-range-thumb {
+    background: #fff;
+    height: 2.2rem;
+    width: 1.7rem;
+    border: 3px solid #999;
+    border-radius: 0 !important;
+    box-shadow: -100vw 0 0 100vw dodgerblue;
+    box-sizing: border-box;
+}
+
+::-ms-fill-lower { 
+    background: dodgerblue;
+}
+
+::-ms-thumb { 
+    background: #fff;
+    border: 2px solid #999;
+    height: 2.2rem;
+    width: 1.7rem;
+    box-sizing: border-box;
+}
+
+::-ms-ticks-after { 
+    display: none; 
+}
+
+::-ms-ticks-before { 
+    display: none; 
+}
+
+::-ms-track { 
+    background: #ddd;
+    color: transparent;
+    height: 2.2rem;
+    border: none;
+}
+
+::-ms-tooltip { 
+    display: none;
+}
