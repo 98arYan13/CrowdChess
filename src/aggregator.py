@@ -203,9 +203,10 @@ def aggregation(moves_list):
 
 @socketio.on("move_from_user", namespace='/users')
 @login_required
-def move_from_user(move):
+def move_from_user(move, confidence):
     emit('preventDrag', True)
-    print(f"\nmove form user {current_user.name}:", move, '\n')
+    print(f"\nmove form user {current_user.name}:", move,
+          " and confidence factor:", confidence, '\n')
     global moves_list, moves_dict
 
     try:

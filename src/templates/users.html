@@ -80,8 +80,8 @@
         <!-- weight/influence of user choice (user's confidence) -->
         <div class="row mx-auto mt-2 mb-2">
           <label for="confidence" style="font-size: 5vmin;">Confidence</label>
-          <input type="range" class="form-range ml-2 mr-2" id="confidence" value="1" min='1' max='5' oninput="this.nextElementSibling.value = this.value">
-          <output style="font-size: 5vmin;">1</output>
+          <input type="range" class="form-range ml-3 mr-2" id="confidence" value="1" min='1' max='5' oninput="this.nextElementSibling.value = this.value">
+          <output id="confidenceOutput" style="font-size: 5vmin;">1</output>
         </div>
 
 
@@ -140,6 +140,7 @@
   // global variables
   var $stop_countdown_chess = false; // countdown timer valiadator
   var $stop_countdown_modal = false; // countdown timer valiadator for modal
+  var $confidence = $("#confidence").val(); // user's confidence value
 
   // online status of home page
   var socket_users = io(window.location.protocol + '//' + document.domain + ':' + location.port + '/users') // users connected
@@ -173,6 +174,8 @@
     $max_legal_moves.text(data.max_legal_moves); // maximum legal moves for next color
     $takeBackPercentage.text(data.take_back_percentage);
     $newGamePercentage.text(data.new_game_percentage);
+    document.getElementById("confidence").value = "1"; // set confidence factor on slider to 1 (default)
+    document.getElementById("confidenceOutput").value = "1"; // set confidence factor on slider output to 1 (default)
   });
 
   // prevent the board to drag pieces when server command it
@@ -554,9 +557,9 @@
     $("#confirm_choice").off().on('click', function() {
       // disable confirm_choice button
       $("#confirm_choice").attr('disabled', true);
-      // send move to aggregator
+      // send move and confidence to aggregator
       console.log("move:" , move)
-      socket_users.emit('move_from_user', move);
+      socket_users.emit('move_from_user', move, $confidence);
       //globalThis.preventDrag = true;
     });
 
